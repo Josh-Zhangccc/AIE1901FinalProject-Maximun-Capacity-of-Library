@@ -2,35 +2,37 @@
 
 ## 项目概述
 
-这是一个基于Python的图书馆座位占用行为模拟系统，旨在研究学生占座行为与图书馆管理措施对空间利用率和个人体验的影响。项目使用DeepSeek的LLM API来模拟学生行为，包含后端Python代码。
+这是一个基于Python的图书馆座位占用行为模拟系统，旨在研究学生占座行为与图书馆管理措施对空间利用率和图书馆最大动态容量之间的关系。项目使用DeepSeek的LLM API来模拟学生行为，包含后端Python代码和前端HTML界面。
 
 项目核心功能：
-- 模拟250个座位的图书馆环境（50x50网格布局）
+- 模拟250个座位的图书馆环境（50x50网格布局中随机选择250个座位）
 - 模拟学生基于个人作息、课程表和座位偏好的行为
 - 管理座位状态（空闲、占用、占座、标记清理）
 - 基于时间限制清理违规占座
-- 提供模拟数据的可视化展示
 - 支持模拟数据的保存与复现功能
+- 提供前端界面进行参数调节和结果可视化
 
 ## 项目结构
 
 ```
 AIE1901_FinalExamSimulation/
 ├── backend/                 # 后端代码
+│   ├── __init__.py         # 包初始化文件
 │   ├── agents.py           # LLM客户端，用于与DeepSeek API交互
 │   ├── library.py          # 图书馆类，管理座位和学生初始化
 │   ├── prompt.py           # 各种LLM提示词模板
 │   ├── seats.py            # 座位类，管理座位状态和属性
 │   ├── simulation.py       # 模拟主类，协调整个模拟过程
-│   └── students.py         # 学生类，模拟学生行为
+│   ├── students.py         # 学生类，模拟学生行为
+│   └── test/               # 测试目录
+│       ├── __init__.py     # 包初始化文件
+│       ├── test_prompt.py  # 提示词功能测试
+│       └── test_seats.py   # 座位类单元测试
 ├── config.py               # 配置文件（当前为空）
 ├── main.py                 # 主程序入口
-├── start.py                # 启动脚本（当前为空）
+├── start.py                # 启动脚本（当前为空，需要实现Windows命令行脚本）
 ├── utils.py                # 工具函数，包含API配置
 ├── seat_simulation_env.yml # Conda环境配置文件
-├── test/                   # 测试目录
-│   ├── test_seats.py       # 座位类单元测试
-│   └── test_prompt.py      # 提示词功能测试
 └── 要求.txt               # 项目需求文档
 ```
 
@@ -40,7 +42,7 @@ AIE1901_FinalExamSimulation/
 - **LLM API**: DeepSeek (通过OpenAI包调用)
 - **Web框架**: Flask
 - **依赖管理**: Conda
-- **前端**: HTML (计划中)
+- **前端**: HTML, JavaScript (计划中)
 - **测试框架**: unittest
 
 ## 核心组件
@@ -61,8 +63,8 @@ AIE1901_FinalExamSimulation/
 - 支持JSON格式响应解析
 
 ### 图书馆系统 (library.py)
-- 初始化2500个座位(50x50网格)
-- 随机分配台灯和插座属性
+- 初始化250个座位(从50x50网格中随机选择)
+- 随机分配台灯(30%)和插座(40%)属性
 - 管理学生初始化
 
 ### 模拟框架 (simulation.py)
@@ -89,17 +91,26 @@ conda env create -f seat_simulation_env.yml
 
 项目需要实现一个Windows命令行脚本"start-app"来直接运行后端Python程序。后端使用Flask框架提供API，前端使用HTML实现。
 
+当前运行方式：
+```bash
+# 激活conda环境
+conda activate seat-simulation
+
+# 运行主程序
+python main.py
+```
+
 ## 测试
 
-项目包含单元测试，位于`test/`目录下：
+项目包含单元测试，位于`backend/test/`目录下：
 - `test_seats.py`: 座位类的完整单元测试
-- `test_prompt.py`: LLM提示词功能测试
+- `test_prompt.py`: 提示词功能测试
 
 运行测试：
 ```bash
-python -m pytest test/
+python -m pytest backend/test/
 # 或
-python test_seats.py
+python backend/test/test_seats.py
 ```
 
 ## 模拟特性
@@ -108,7 +119,7 @@ python test_seats.py
 - **学生行为**: 基于课程表、作息和占座度的智能决策
 - **数据记录**: 记录每次更新的数据以支持模拟复现
 - **参数调节**: 用户可调节学生数量、座位偏好、检查清理时间等参数
-- **座位初始化**: 50x50网格，随机分配台灯(30%)和插座(40%)属性
+- **座位初始化**: 从50x50网格中随机选择250个座位，随机分配台灯(30%)和插座(40%)属性
 - **座位状态管理**: 包括占用时间跟踪和状态转换
 
 ## 前端功能（计划中）
@@ -118,3 +129,7 @@ python test_seats.py
 - 滑块调节学生数量、座位偏好、检查和清理时间
 - 图书馆座位可视化显示
 - 模拟数据可视化图表，支持多种可隐藏的图表
+
+## 项目状态
+
+目前项目架构已建立，包含基本的座位管理系统、LLM客户端和提示词系统。测试用例已实现。需要进一步完善模拟逻辑、学生行为模拟和前端界面。
