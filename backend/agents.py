@@ -2,14 +2,14 @@
 agents.py
 准备基于LLM的AGENTs
 """
-
+import json
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from utils import BASE_URL,API_KEY,MODEL
 
-from prompt import test_prompt
+#from prompt import test_prompt
 from openai import OpenAI
 
 class Clients:
@@ -19,25 +19,12 @@ class Clients:
             base_url=BASE_URL,
             api_key=API_KEY,
         )
-        self.test_response = self.client.chat.completions.create(
-            model=MODEL,
-            messages=[
-                {'role':'user','content':test_prompt},
-            ],
-            stream=False,
-            temperature=0.3,  #越高越随机
-            max_tokens=150,#最大输出长度
-            top_p=0.95,#核采样
-            frequency_penalty=0.0,#避免重复
-            presence_penalty=0.0#新话题鼓励x
 
-        )
-
-    def response(self,prompt):
+    def response(self,prompt:str):
         response = self.client.chat.completions.create(
             model=MODEL,
             messages=[
-                {'role':'system','content':prompt},
+                {'role':'system','content':prompt}
             ],
             stream=False,
             temperature=0.7,
@@ -46,4 +33,18 @@ class Clients:
             frequency_penalty=0.0,
             presence_penalty=0.0
         )
-        return response.choices[0].message.content
+        reply = response.choices[0].message.content
+        return self._transform_to_json(reply)
+    
+#    def _test(self):
+#        print(self.response(test_prompt))
+
+    def _transform_to_json(self,llm_response):
+        try:
+            llm_response = json.loads(llm_response)  # 转换为字典
+        except json.JSONDecodeError as e:
+            # 处理解析失败的情况（如 LLM 输出格式错误）
+            print(f"JSON 解析失败: {e}")
+            llm_response = {"action": None}
+        finally:
+            return llm_response
