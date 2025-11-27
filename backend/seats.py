@@ -28,7 +28,13 @@ class Seat:
         self.socket = socket      # 是否有插座
         self.status = Status.vacant  # 座位状态
         self.owner = None         # 座位当前使用者（学生索引）
-        self.taken_time = datetime(2025,11,24,7,0,0)  # 座位被占用的时间
+        self.taken_time = datetime(1900,1,1,7,0,0)  # 座位被占用的时间
+        self.window = False
+        if x*y == 0 or x == 20 or y == 20:
+            self.window  = True         #是否有窗户
+
+        self.crowded_para = 0           #拥挤参数
+        self.time_delta = timedelta(minutes=30)
 
     def taken_hours(self):
         """
@@ -39,16 +45,13 @@ class Seat:
         """
         return self.taken_time.hour + self.taken_time.minute/60
     
-    def update(self,delta:timedelta):
+    def update(self):
         """
         更新座位占用时间
-        
-        Args:
-            delta (timedelta): 时间增量
         """
         if self.taken_hours() != 0:
-            self.taken_time += delta
-
+            self.taken_time += self.time_delta
+            
     def take(self,student_index):
         """
         学生占用座位
@@ -96,3 +99,6 @@ class Seat:
         if self.status == Status.signed and self.taken_hours() >= limit_time:
             self.status = Status.vacant
             self.owner = None
+
+    def set_crowded_para(self,num):
+        self.crowded_para = num
