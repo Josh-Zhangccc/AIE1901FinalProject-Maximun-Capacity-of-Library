@@ -69,17 +69,24 @@ class Seat:
         
         Args:
             reverse (bool): 
-                - True: 学生完全离开（释放座位）
-                - False: 学生暂时离开但占座（座位状态改为reverse）
+                - False: 学生完全离开（释放座位）
+                - True: 学生暂时离开但占座（座位状态改为reverse）
         """
         if self.owner:
-            if reverse:
+            if not reverse:
                 # 学生完全离开，座位变为空闲
                 self.status = Status.vacant
                 self.owner = None
             else:
                 # 学生暂时离开但占座
                 self.status = Status.reverse
+
+    def back(self):
+        '''
+        占座的学生回到座位
+        '''
+        if self.status == Status.reverse:
+            self.status = Status.taken
 
     def sign(self):
         """

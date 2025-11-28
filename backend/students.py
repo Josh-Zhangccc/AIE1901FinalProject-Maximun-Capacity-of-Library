@@ -154,3 +154,8 @@ class Student:
             self.take_seat(chosen_seat)
             return True
         return False
+
+    def return_seat(self):
+        if self.state == StudentState.AWAY:
+            self.state = StudentState.LEARNING
+            self.seat.back()
