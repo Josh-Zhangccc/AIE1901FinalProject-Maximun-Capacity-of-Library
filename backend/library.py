@@ -23,8 +23,6 @@ class Library:
         self.time_delta = timedelta(minutes=15)  # 时间更新步长，图书馆时间更新为15分钟
         self._count = 0  # 学生ID计数器，确保每个学生有唯一ID
         self.limit_reversed_time = timedelta(hours=1)  # 占座时间限制，超过此时间的占座将被清理
-        self.initialize_seats()  # 初始化座位系统
-        self.initialize_students()  # 初始化学生系统
         self.unsatisfied = 0  # 不满意计数器，记录因没有座位而无法学习的学生数
 
     @staticmethod
@@ -42,7 +40,7 @@ class Library:
         random_nums = [random.random() for _ in range(random_num)] #@list
         return random_nums
 
-    def initialize_seats(self,lamp_rate:float=0.5,socket_rate:float=0.5):
+    def initialize_seats(self,row,column,lamp_rate:float=0.5,socket_rate:float=0.5):
         """
         初始化座位系统，在20x20网格中创建400个座位
         随机分配台灯和插座属性，边缘座位自动为靠窗座位
@@ -53,12 +51,12 @@ class Library:
         """
         self.seats.clear()  # 清空现有座位列表
         # 生成400个随机数用于决定是否分配台灯和插座
-        lamp_list = [lamp>=lamp_rate for lamp in self._random_assign(400)]  # 生成400个随机值
-        socket_list = [socket>=socket_rate for socket in self._random_assign(400)]
+        lamp_list = [lamp>=lamp_rate for lamp in self._random_assign(row*column)]  # 生成400个随机值
+        socket_list = [socket>=socket_rate for socket in self._random_assign(row*column)]
         # 遍历20x20网格，创建每个座位
         idx = 0
-        for x in range(20):
-            for y in range(20):
+        for x in range(row):
+            for y in range(column):
                 # 根据随机数决定是否分配台灯和插座
                 self.seats.append(Seat(x,y,lamp_list[idx],socket_list[idx]))
                 idx += 1
@@ -185,14 +183,14 @@ class Library:
         这是模拟系统的核心更新函数
         """
         self.current_time+=self.time_delta  # 推进系统时间
-        # 更新所有座位的状态和拥挤参数
-        for seat in self.seats:
-            seat.update()  # 更新座位时间
-            self.calculate_each_seat_crowded_para()  # 计算座位拥挤参数
         # 更新所有学生状态和行为
         for student in self.students:
             student.update()  # 更新学生时间
             self.next_step_of_each_student(student)  # 处理学生下一步行为
+        # 更新所有座位的状态和拥挤参数
+        for seat in self.seats:
+            seat.update()  # 更新座位时间
+            self.calculate_each_seat_crowded_para()  # 计算座位拥挤参数
 
     def sign_seat(self):
         """
@@ -255,18 +253,51 @@ class Library:
             student (Student): 需要处理行为的学生对象
         """
         action = student.get_current_action()  # 获取学生当前应执行的动作
+        print(student.student_id)
+        print(student.state,action)
         match action:
             case "start":  # 开始一天的活动
-                pass  # 开始动作无需特殊处理
+                # 当学生处于SLEEP状态且时间到达start时间点时，需要转换状态以便开始选座
+                if student.state == StudentState.SLEEP:
+                    student.state = StudentState.GONE  # 转换为GONE状态，这样学生就可以选座了
+                    print(f"学生{student.student_id}苏醒了")
             case "learn":  # 学习动作
                 if student.state != StudentState.LEARNING:  # 如果学生不在学习状态
                     take_seat = student.choose_seat(self.seats)  # 尝试选择座位
                     if not take_seat:  # 如果没有选到座位
                         self.get_unsatisfied()  # 增加不满意计数
+                        print(f"学生{student.student_id}因为没有选到座位而心生不满")
             case "end":  # 结束一天的活动
                 student.state = StudentState.SLEEP  # 学生进入休眠状态
+                print(f"学生{student.student_id}的一天结束了")
+            case "away":  # 临时离开
+                # 学生离开座位，根据智能决策决定是否占座
+                if student.state == StudentState.LEARNING:
+                    student.leave_seat()  # 学生离开座位，根据智能决策决定是否占座
+                    print(f"学生{student.student_id}离开了座位")
             case _:  # 其他动作（如吃饭、上课等）
-                student.leave_seat()  # 学生离开座位
+                # 为其他动作提供更灵活的处理
+                self._handle_other_actions(student, action)
+
+    def _handle_other_actions(self, student: Student, action: str):
+        """
+        处理学生的其他动作
+
+        Args:
+            student (Student): 学生对象
+            action (str): 学生的动作
+        """
+        # 对于各种非学习动作，学生需要暂时离开座位
+        # 离开座位时，会根据学生的性格和满意度智能决定是否占座
+        if student.state == StudentState.LEARNING:
+            student.leave_seat()
+            print(f"学生{student.student_id}离开了座位")
+        elif student.state == StudentState.AWAY:
+            # 如果已经在暂时离开状态，检查是否需要返回
+            if student.seat and (student.seat.status in [Status.vacant, Status.taken]):
+                # 如果原座位已空出或被占用，需要学生重新选择座位
+                student.state = StudentState.GONE
+                print(f"学生{student.student_id}的座位被清理了")
 
     def count_taken_seats(self):
         """

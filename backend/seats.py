@@ -39,7 +39,7 @@ class Seat:
             self.window  = True
 
         self.crowded_para = 0           # 拥挤参数，表示周围座位的占用情况，影响学生满意度
-        self.time_delta = timedelta(minutes=30)  # 时间更新步长，与学生时间更新同步
+        self.time_delta = timedelta(minutes=15)  # 时间更新步长，与学生时间更新同步
 
     def taken_hours(self):
         """
@@ -82,12 +82,14 @@ class Seat:
                 - False: 学生完全离开（释放座位），座位变为空闲状态
                 - True: 学生暂时离开但占座（座位状态改为reverse），保留座位使用权
         """
-        if self.owner:  # 确保座位有使用者才允许离开操作
+        if self.status == Status.taken:  # 确保座位有使用者才允许离开操作
             if not reverse:
+                print('Seat接收到',False,'预期行为：学生完全离开，座位变为空闲，清除使用者信息')
                 # 学生完全离开，座位变为空闲，清除使用者信息
                 self.status = Status.vacant
                 self.owner = None
             else:
+                print('Seat接收到',True,'预期行为：学生暂时离开但占座，座位状态改为占座状态，保留使用者信息')
                 # 学生暂时离开但占座，座位状态改为占座状态，保留使用者信息
                 self.status = Status.reverse
 

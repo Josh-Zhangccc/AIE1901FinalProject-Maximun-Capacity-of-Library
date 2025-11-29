@@ -47,13 +47,14 @@ class Student:
         self._initialize_student_para(**student_para)  # 初始化学生基本属性
         self._initialize_seat_preference(**seat_preference)  # 初始化座位偏好
         self.seat = None  # 当前占用的座位对象，无座位时为None
-        self.state = StudentState.SLEEP  # 当前状态，默认为休眠状态
+        self.state = StudentState.GONE  # 当前状态，默认为离开状态
         self.client = Clients()  # LLM客户端，用于智能决策
         self.schedule = []  # 学生日程表，由LLM生成
         self.generate_schedule()  # 初始化时生成日程表
         self.current_time = datetime(1900,1,1,7,0,0)  # 当前时间，从7:00:00开始
-        self.time_delta = timedelta(minutes=30)  # 时间更新步长，与座位时间同步
+        self.time_delta = timedelta(minutes=15)  # 时间更新步长，与座位时间同步
         self.know_library_limit_reverse_time(timedelta(hours=1))  # 了解图书馆占座时间限制
+        print(student_id,student_para,self.schedule,sep="\n")
     
     def _initialize_seat_preference(self,lamp:float,socket:float,space:float):
         """
@@ -130,13 +131,42 @@ class Student:
         Returns:
             str: 当前时间对应的行为动作（start, learn, eat, course, rest, end等）
         """
-        # 找到当前时间对应的动作，返回最近的时间点的动作
-        for i in range(len(self.schedule) - 1, -1, -1):
-            schedule_time = self.schedule[i]["time"]
-            schedule_time = datetime.strptime(schedule_time,"%H:%M:%S")
-            if schedule_time <= self.current_time:
-                return self.schedule[i]["action"]
-        return "end"  # 默认为结束状态
+        if not self.schedule:
+            return "end"  # 无日程直接返回结束
+        
+        # 1. 处理日程表：转换时间格式并按时间排序（解决AI生成的无序问题）
+        try:
+            # 转换每个日程项的时间为datetime对象，便于排序和比较
+            scheduled_items = []
+            for item in self.schedule:
+                time_str = item["time"]
+                time_obj = datetime.strptime(time_str, "%H:%M:%S")
+                scheduled_items.append({
+                    "time_obj": time_obj,
+                    "action": item["action"]
+                })
+            
+            # 按时间正序排列（从早到晚）
+            scheduled_items.sort(key=lambda x: x["time_obj"])
+            
+            # 2. 查找当前时间对应的最近动作
+            latest_action = None
+            for item in scheduled_items:
+                if item["time_obj"] <= self.current_time:
+                    latest_action = item["action"]  # 不断更新为最近的过去动作
+                else:
+                    break  # 因为已排序，后续时间更大，可提前退出
+            
+            # 3. 处理所有时间都在当前时间之后的情况
+            if latest_action is None:
+                return scheduled_items[0]["action"]  # 返回最早的动作
+            
+            return latest_action
+        
+        except (KeyError, ValueError) as e:
+            # 处理日程格式错误（如缺少time字段、时间格式错误）
+            print(f"日程格式错误: {e}，使用默认动作")
+            return "start" if self.schedule else "end"
 
     def calculate_seat_satisfaction(self,seat=None):
         """
@@ -177,14 +207,19 @@ class Student:
         if self.seat is None:
             return False  # 没有座位时不需要判断占座
 
+        # 获取座位相关因素
         self.calculate_seat_satisfaction()  # 计算当前座位满意度
+        time_to_limit = self._get_time_to_limit()  # 获取到占座时间限制的时间
+
+        # 构建更全面的提示，包括时间因素
         from .prompt import leave_prompt
         formatted_prompt = leave_prompt.format(
             character=self.student_para["character"],
             satisfaction=self.satisfaction,
-            time=str(self.current_time),
-            limit_time=f"{self.limit_reverse_time}h",
-            schedule=self.schedule
+            time=str(self.current_time.time()),
+            limit_time=str(self.limit_reverse_time),
+            schedule=self.schedule,
+            time_to_limit=time_to_limit
         )
         response = self.client.response(formatted_prompt)
 
@@ -192,9 +227,46 @@ class Student:
             action = response["action"]
             return action == "reverse"  # reverse表示占座
         else:
-            # 如果LLM响应格式不正确，使用默认逻辑
-            # 满意度高且性格守序的学生倾向于占座
-            return self.satisfaction >= 3 and self.student_para["character"] == "守序"
+            # 如果LLM响应格式不正确，使用更智能的默认逻辑
+            return self._default_reverse_logic()
+
+    def _get_time_to_limit(self) -> str:
+        """
+        获取到占座时间限制的时间描述
+
+        Returns:
+            str: 时间描述字符串
+        """
+        # 计算当前座位占用时间
+        if hasattr(self.seat, 'taken_time') and self.seat.taken_time: # type: ignore
+            current_occupy_duration = self.current_time - self.seat.taken_time # type: ignore
+            remaining_time = self.limit_reverse_time - current_occupy_duration
+            if remaining_time.total_seconds() > 0:
+                return f"剩余 {remaining_time} 时间限制"
+            else:
+                return "已超过时间限制"
+        else:
+            return "未开始计时"
+
+    def _default_reverse_logic(self) -> bool:
+        """
+        当LLM无法响应时的默认占座逻辑
+        基于学生性格、座位满意度、当前时间等因素
+
+        Returns:
+            bool: 是否占座
+        """
+        # 守序性格且满意度较高的学生倾向于占座
+        if self.student_para["character"] == "守序" and self.satisfaction >= 3:
+            return True
+        # 利己性格但满意度非常高的学生也可能占座
+        elif self.student_para["character"] == "利己" and self.satisfaction >= 4:
+            return True
+        # 在特殊时间段（如午餐时间）可能会倾向于占座
+        current_hour = self.current_time.hour
+        if 11 <= current_hour <= 13 and self.satisfaction >= 2:
+            return True
+        return False
         
     def take_seat(self,seat:Seat):
         """
@@ -235,7 +307,7 @@ class Student:
         """
         if self.state == StudentState.LEARNING:  # 只有学习状态下才可离开
             boolean = self._should_reverse_seat()  # 智能决策是否占座
-            self.seat.leave(boolean)  # type: ignore # 通知座位离开
+            self.seat.leave(boolean)  # type: ignore # 通知座位离开  
             if boolean:  # 根据决策更新学生状态
                 self.state = StudentState.AWAY  # 占座离开，状态为暂时离开
             else:
@@ -248,7 +320,7 @@ class Student:
         """
         self.current_time += self.time_delta
 
-    def choose_seat(self,seats:list[Seat]) -> bool:
+    def choose_seat(self,seats:list[Seat]):
         """
         选择座位的主函数
         根据当前状态决定如何处理座位选择
@@ -260,17 +332,87 @@ class Student:
             bool: 是否成功选择到座位
         """
         if self.state == StudentState.LEARNING:
+            print("Student输出choose_seat:",True)
             return True  # 已在学习状态，无需选择
         elif self.state == StudentState.AWAY:
             # 暂时离开状态，先尝试回到原座位
-            if self.seat and (self.seat.status == Status.reverse or self.seat.status == Status.signed):
-                self.seat.back()  # 尝试回到原座位
+            if self._try_return_to_original_seat():
+                print("Student输出choose_seat:",True)
                 return True
             else:
-                whether_take_seat = self.choose(seats)  # 否则选择新座位
+                # 如果无法回到原座位，则选择新座位
+                print("Student输出choose_seat:?")
+                return self._choose_new_seat(seats)
         elif self.state == StudentState.GONE:
-            whether_take_seat = self.choose(seats)  # 完全离开状态，选择新座位
-        return whether_take_seat
+            # 完全离开状态，选择新座位
+            return self._choose_new_seat(seats)
+        print("Student输出choose_seat:",False)
+        return False
+
+    def _try_return_to_original_seat(self) -> bool:
+        """
+        尝试回到原始座位
+
+        Returns:
+            bool: 是否成功回到原始座位
+        """
+        if not self.seat or (self.seat.status != Status.reverse and self.seat.status != Status.signed):
+            print(False)
+            return False  # 没有原始座位或原始座位状态不允许返回
+
+        # 尝试回到原始座位
+        self.seat.back()  # type: ignore # 回到原始座位
+        if self.seat.status in [Status.taken, Status.reverse]:  # 如果成功回到座位
+            self.state = StudentState.LEARNING
+            print(True)
+            return True
+        print(False)
+        return False
+
+    def _choose_new_seat(self, seats: list[Seat]) -> bool:
+        """
+        选择新座位
+
+        Args:
+            seats (list[Seat]): 可选的座位列表
+
+        Returns:
+            bool: 是否成功选择到新座位
+        """
+        # 过滤出真正空闲的座位
+        available_seats = [seat for seat in seats if seat.status == Status.vacant]
+        if not available_seats:
+            print(False,"没有可用座位")
+            return False  # 没有可用座位
+
+        # 根据学生偏好和座位满意度选择最佳座位
+        best_seat = self._find_best_seat(available_seats)
+        if best_seat:
+            self.take_seat(best_seat)
+            return True
+        return False
+
+    def _find_best_seat(self, available_seats: list[Seat]) -> Seat | None:
+        """
+        从可用座位中找到最符合学生偏好的座位
+
+        Args:
+            available_seats (list[Seat]): 可用座位列表
+
+        Returns:
+            Seat | None: 最佳座位，如果没有找到则返回None
+        """
+        best_seat = None
+        best_satisfaction = -1  # 使用-1作为初始值，因为满意度可能为0
+
+        for seat in available_seats:
+            satisfaction = self.calculate_seat_satisfaction(seat)
+            # 如果当前座位满意度更高，则选择该座位
+            if satisfaction > best_satisfaction:
+                best_satisfaction = satisfaction
+                best_seat = seat
+
+        return best_seat
 
     def choose(self,seats:list[Seat]):
         """

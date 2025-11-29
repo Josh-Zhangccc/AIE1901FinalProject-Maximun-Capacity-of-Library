@@ -5,7 +5,7 @@
 这是一个基于Python的图书馆座位占用行为模拟系统，旨在研究学生占座行为与图书馆管理措施对空间利用率和图书馆最大动态容量之间的关系。项目使用DeepSeek的LLM API来模拟学生行为，包含后端Python代码。
 
 项目核心功能：
-- 模拟图书馆环境（20x20网格，250个座位）
+- 模拟图书馆环境（20x20网格，400个座位）
 - 模拟学生基于个人作息、课程表和座位偏好的行为
 - 管理座位状态（空闲、占用、占座、标记清理）
 - 基于时间限制清理违规占座
@@ -35,8 +35,15 @@ AIE1901_FinalExamSimulation/
 ├── main.py                 # 主程序入口
 ├── seat_simulation_env.yml # Conda环境配置文件
 ├── simple_test.py          # 简单测试脚本
-├── start.py                # 启动脚本
+├── simple_check.py         # 简单检查脚本
+├── specific_test.py        # 特定功能测试脚本
+├── comprehensive_test.py   # 综合测试脚本
+├── problem_check.py        # 问题检查脚本
+├── test_seats_fixed.py     # 修复后的座位测试
+├── start.py                # Python启动脚本
+├── start-app.bat           # Windows批处理启动脚本
 ├── utils.py                # 工具函数，包含API配置
+├── code_issue_report.md    # 代码问题报告文档
 └── 要求.txt               # 项目需求文档
 ```
 
@@ -45,7 +52,8 @@ AIE1901_FinalExamSimulation/
 - **后端**: Python 3.13.9
 - **LLM API**: DeepSeek (通过OpenAI包调用)
 - **依赖管理**: Conda
-- **测试框架**: unittest
+- **Web框架**: Flask (包含Flask-CORS用于跨域)
+- **测试框架**: unittest, pytest
 - **HTTP Client**: OpenAI Python Package
 
 ## 核心组件
@@ -86,7 +94,8 @@ AIE1901_FinalExamSimulation/
 ### 模拟框架 (simulation.py)
 - 协调图书馆、学生和座位系统
 - 管理模拟时间流
-- 注释中提及计划使用deque/heap实现排队功能
+- 提供交互式命令行界面，支持 step, status, seats, time, quit, help 命令
+- 实现了实时的模拟状态查看和参数调整功能
 
 ## 环境配置
 
@@ -95,7 +104,7 @@ AIE1901_FinalExamSimulation/
 conda env create -f seat_simulation_env.yml
 ```
 
-环境包含必要的Python包，如Flask、OpenAI、httpx等。
+环境包含必要的Python包，如Flask、Flask-CORS、OpenAI、httpx等。
 
 ## API配置
 
@@ -104,7 +113,7 @@ conda env create -f seat_simulation_env.yml
 - `API_KEY`: sk-cf8230f3e78a4cedadf7f7ab158f5441
 - `MODEL`: deepseek-chat
 
-## 运行方式
+### 运行方式
 
 当前运行方式：
 ```bash
@@ -113,6 +122,11 @@ conda activate seat-simulation
 
 # 运行主程序
 python main.py
+```
+
+或者使用Windows批处理文件：
+```bash
+start-app.bat
 ```
 
 ## 测试
@@ -148,6 +162,7 @@ python backend/test/test_interactions.py
 - **座位状态管理**: 包括占用时间跟踪和状态转换
 - **学生类型**: 支持3种专业(人文、科学、工程)和3种学习程度(勤奋、中等、懒惰)的学生，共9种不同类型的学生
 - **交互测试**: 包含综合交互测试，验证系统各组件间的协作关系
+- **交互式命令行界面**: 支持实时查看模拟状态、座位概览和调整时间限制
 
 ## 提示词系统 (prompt.py)
 
@@ -168,9 +183,7 @@ python backend/test/test_interactions.py
 目前项目架构已建立，包含完整的座位管理系统、学生系统、LLM客户端和提示词系统。测试用例已实现，特别是座位系统、学生系统和交互测试覆盖了各种场景。图书馆系统已实现基本功能，包括座位初始化、学生初始化和管理功能。
 
 **待完善部分：**
-- main.py 需要实现完整的模拟流程
-- start.py 启动脚本需要创建Windows命令行脚本功能
 - 前端界面需要开发
 - 模拟数据记录与复现功能需要实现
-- 模拟框架需要完善 (simulation.py)
 - 完整的模拟流程需要实现
+- 模拟结果可视化功能需要实现
