@@ -166,8 +166,8 @@ class Student:
         if self.state == StudentState.LEARNING:
             return True
         elif self.state == StudentState.AWAY:
-            if self.seat.status == Status.reverse or Status.signed: # type: ignore
-                self.seat.back() # type: ignore
+            if self.seat and (self.seat.status == Status.reverse or self.seat.status == Status.signed):
+                self.seat.back()
                 return True
             else:
                 whether_take_seat = self.choose(seats)
@@ -181,9 +181,9 @@ class Student:
         for seat in seats:
             if seat.status == Status.vacant:
                 next_grade = self.calculate_seat_satisfaction(seat)
-            if next_grade>=grade:
-                grade = next_grade
-                chosen_seat = seat
+                if next_grade>=grade:
+                    grade = next_grade
+                    chosen_seat = seat
         if type(chosen_seat) == Seat:
             self.take_seat(chosen_seat)
             return True

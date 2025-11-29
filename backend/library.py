@@ -1,5 +1,5 @@
-from seats import Seat,Status
-from students import Student,StudentState
+from .seats import Seat,Status
+from .students import Student,StudentState
 import random
 from datetime import datetime, timedelta
 random.seed(1)
@@ -26,12 +26,13 @@ class Library:
 
     def initialize_seats(self,lamp_rate:float=0.5,socket_rate:float=0.5):
         self.seats.clear()
-        lamp_list = [lamp>=lamp_rate for lamp in self._random_assign(20)]
-        socket_list = [socket>=socket_rate for socket in self._random_assign(20)]
+        lamp_list = [lamp>=lamp_rate for lamp in self._random_assign(400)]  # 生成400个随机值
+        socket_list = [socket>=socket_rate for socket in self._random_assign(400)]
+        idx = 0
         for x in range(20):
             for y in range(20):
-                for lamp,socket in zip(lamp_list,socket_list):
-                    self.seats.append(Seat(x,y,lamp,socket))
+                self.seats.append(Seat(x,y,lamp_list[idx],socket_list[idx]))
+                idx += 1
         for seat in self.seats:
             self.seats_map[seat.coordinate] = seat
 
@@ -118,7 +119,7 @@ class Library:
             seat.update()
             self.calculate_each_seat_crowded_para()
         for student in self.students:
-            student.update
+            student.update()
             self.next_step_of_each_student(student)
 
     def sign_seat(self):
@@ -167,7 +168,7 @@ class Library:
         for seat in self.seats:
             if seat.status != Status.vacant:
                 count += 1
-        return len(self.seats) - count
+        return count
     
 
     def count_reversed_seats(self):
