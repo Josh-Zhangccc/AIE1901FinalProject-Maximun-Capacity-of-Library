@@ -99,7 +99,7 @@ class Student:
             self.satisfaction += 3 * self.seat_preference["socket"]
         if seat.window:
             self.satisfaction += 1
-            self.satisfaction += 3*seat.crowded_para*self.seat_preference["space"]
+            self.satisfaction += 3*(1-seat.crowded_para)*self.seat_preference["space"]
         return self.satisfaction
 
     def _should_reverse_seat(self) -> bool: 
@@ -127,38 +127,67 @@ class Student:
             return self.satisfaction >= 3 and self.student_para["character"] == "守序"
         
     def take_seat(self,seat:Seat):
-        if not self.seat:
-            self.state = StudentState.LEARNING
-            self.seat = seat
-            self.seat.take(self.student_id)
-
+        self.state = StudentState.LEARNING
+        self.seat = seat
+        self.seat.take(self.student_id)
+        '''情况列举：Student--Seat
+            1. 在图书馆（LEARNING）--taken
+            2. 不在图书馆：
+                2.1. AWAY--reverse/signed/vacant
+                2.2. GONE--None
+            3. SLEEP--None
+            
+            核心函数：  take_seat(seat):
+                                    LEARNING,self.seat = seat
+                        leave_seat():
+                                    LEARNING时，bool，->AWAY/GONE
+                                    其他： pass
+                        choose():
+                                    LEARNING:pass
+                                    AWAY:
+                                        seat--vacant->GONE
+                                        seat -> None
+                                    GONE:
+                                        评分，选
+                                        '''
     def leave_seat(self):
-        if self.state == StudentState.LEARNING and self.seat is not None:
+        if self.state == StudentState.LEARNING:
             boolen = self._should_reverse_seat()
-            self.seat.leave(boolen)
-            self.state = StudentState.AWAY if boolen else StudentState.GONE
+            self.seat.leave(boolen)  # type: ignore
+            if boolen:
+                self.state = StudentState.AWAY
+            else:
+                self.state = StudentState.GONE
 
     def update(self):
         self.current_time += self.time_delta
 
-    def choose(self,seats:list) -> bool:
+    def choose_seat(self,seats:list[Seat]) -> bool:
+        if self.state == StudentState.LEARNING:
+            return True
+        elif self.state == StudentState.AWAY:
+            if self.seat.status == Status.reverse or Status.signed: # type: ignore
+                self.seat.back() # type: ignore
+                return True
+            else:
+                whether_take_seat = self.choose(seats)
+        elif self.state == StudentState.GONE:
+            whether_take_seat = self.choose(seats)
+        return whether_take_seat
+
+    def choose(self,seats:list[Seat]):
         grade = 1
         chosen_seat = None
         for seat in seats:
             if seat.status == Status.vacant:
-               next_grade = self.calculate_seat_satisfaction(seat)
-               if next_grade>=grade:
-                   grade = next_grade
-                   chosen_seat = seat
+                next_grade = self.calculate_seat_satisfaction(seat)
+            if next_grade>=grade:
+                grade = next_grade
+                chosen_seat = seat
         if type(chosen_seat) == Seat:
             self.take_seat(chosen_seat)
             return True
         return False
-
-    def return_seat(self):
-        if self.state == StudentState.AWAY:
-            self.state = StudentState.LEARNING
-            self.seat.back() # type: ignore
 
     
     @classmethod
