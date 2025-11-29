@@ -96,14 +96,11 @@ class Seat:
         if self.status == Status.reverse:
             self.status = Status.signed
 
-    def clear(self,limit_time:float):
+    def clear(self):
         """
         清理超时的违规占座
-        
-        Args:
-            limit_time (float): 占座时间限制（小时）
         """
-        if self.status == Status.signed and self.taken_hours() >= limit_time:
+        if self.status == Status.signed :
             self.status = Status.vacant
             self.owner = None
 
