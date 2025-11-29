@@ -158,4 +158,149 @@ class Student:
     def return_seat(self):
         if self.state == StudentState.AWAY:
             self.state = StudentState.LEARNING
-            self.seat.back()
+            self.seat.back() # type: ignore
+
+    
+    @classmethod
+    def create_humanities_diligent_student(cls, student_id):
+        """创建勤奋的文科生"""
+        student_para = {
+            "character": "守序", 
+            "schedule_type": "正常", 
+            "focus_type": "高", 
+            "course_situation": "多"
+        }
+        seat_preference = {
+            "lamp": 0.7,      # 文科生喜欢光线好的环境阅读
+            "socket": 0.4,    # 对插座需求一般
+            "space": 0.6      # 需要安静宽松的环境
+        }
+        return cls(student_id, student_para, seat_preference)
+    
+    @classmethod
+    def create_humanities_medium_student(cls, student_id):
+        """创建中等程度的文科生"""
+        student_para = {
+            "character": "守序", 
+            "schedule_type": "正常", 
+            "focus_type": "中", 
+            "course_situation": "中"
+        }
+        seat_preference = {
+            "lamp": 0.5,
+            "socket": 0.5,
+            "space": 0.5
+        }
+        return cls(student_id, student_para, seat_preference)
+    
+    @classmethod
+    def create_humanities_lazy_student(cls, student_id):
+        """创建懒惰的文科生"""
+        student_para = {
+            "character": "利己", 
+            "schedule_type": "晚", 
+            "focus_type": "低", 
+            "course_situation": "少"
+        }
+        seat_preference = {
+            "lamp": 0.3,      # 对光线要求不高
+            "socket": 0.6,    # 可能需要给设备充电
+            "space": 0.4      # 对环境要求不高
+        }
+        return cls(student_id, student_para, seat_preference)
+    
+    @classmethod
+    def create_science_diligent_student(cls, student_id):
+        """创建勤奋的理科生"""
+        student_para = {
+            "character": "守序", 
+            "schedule_type": "早", 
+            "focus_type": "高", 
+            "course_situation": "多"
+        }
+        seat_preference = {
+            "lamp": 0.8,      # 理科生需要好的光线来计算和阅读图表
+            "socket": 0.7,    # 需要给计算器或笔记本供电
+            "space": 0.5      # 需要足够的桌面空间
+        }
+        return cls(student_id, student_para, seat_preference)
+    
+    @classmethod
+    def create_science_medium_student(cls, student_id):
+        """创建中等程度的理科生"""
+        student_para = {
+            "character": "守序", 
+            "schedule_type": "正常", 
+            "focus_type": "中", 
+            "course_situation": "中"
+        }
+        seat_preference = {
+            "lamp": 0.6,
+            "socket": 0.6,
+            "space": 0.5
+        }
+        return cls(student_id, student_para, seat_preference)
+    
+    @classmethod
+    def create_science_lazy_student(cls, student_id):
+        """创建懒惰的理科生"""
+        student_para = {
+            "character": "利己", 
+            "schedule_type": "晚", 
+            "focus_type": "低", 
+            "course_situation": "少"
+        }
+        seat_preference = {
+            "lamp": 0.4,
+            "socket": 0.7,    # 可能需要设备充电
+            "space": 0.3      # 对空间要求不高
+        }
+        return cls(student_id, student_para, seat_preference)
+    
+    @classmethod
+    def create_engineering_diligent_student(cls, student_id):
+        """创建勤奋的工科生"""
+        student_para = {
+            "character": "守序", 
+            "schedule_type": "早", 
+            "focus_type": "高", 
+            "course_situation": "多"
+        }
+        seat_preference = {
+            "lamp": 0.9,      # 工科生需要极好的光线进行复杂设计和编程
+            "socket": 0.9,    # 需要给电脑、设备供电
+            "space": 0.7      # 需要大量桌面空间进行设计和计算
+        }
+        return cls(student_id, student_para, seat_preference)
+    
+    @classmethod
+    def create_engineering_medium_student(cls, student_id):
+        """创建中等程度的工科生"""
+        student_para = {
+            "character": "守序", 
+            "schedule_type": "正常", 
+            "focus_type": "中", 
+            "course_situation": "中"
+        }
+        seat_preference = {
+            "lamp": 0.7,
+            "socket": 0.7,
+            "space": 0.6
+        }
+        return cls(student_id, student_para, seat_preference)
+    
+    @classmethod
+    def create_engineering_lazy_student(cls, student_id):
+        """创建懒惰的工科生"""
+        student_para = {
+            "character": "利己", 
+            "schedule_type": "晚", 
+            "focus_type": "低", 
+            "course_situation": "少"
+        }
+        seat_preference = {
+            "lamp": 0.5,
+            "socket": 0.8,    # 仍需给设备充电
+            "space": 0.4
+        }
+        return cls(student_id, student_para, seat_preference)

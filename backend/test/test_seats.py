@@ -98,14 +98,14 @@ class TestSeat(unittest.TestCase):
         """测试更新时间"""
         original_hour = self.seat.taken_time.hour
         original_minute = self.seat.taken_time.minute
-        self.seat.update(timedelta(minutes=30))
+        self.seat.update()
         self.assertEqual(self.seat.taken_time.hour, original_hour)
         self.assertEqual(self.seat.taken_time.minute, original_minute + 30)
 
     def test_update_time_with_hour_change(self):
         """测试更新时间跨小时"""
         self.seat.taken_time = self.seat.taken_time.replace(hour=9, minute=45)
-        self.seat.update(timedelta(minutes=30))
+        self.seat.update()
         self.assertEqual(self.seat.taken_time.hour, 10)
         self.assertEqual(self.seat.taken_time.minute, 15)
 
