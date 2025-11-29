@@ -26,14 +26,17 @@ AIE1901_FinalExamSimulation/
 │   ├── students.py         # 学生类，模拟学生行为
 │   └── test/               # 测试目录
 │       ├── __init__.py     # 包初始化文件
+│       ├── test_interactions.py # 座位、学生和图书馆交互测试
 │       ├── test_prompt.py  # 提示词功能测试
 │       ├── test_seats.py   # 座位类单元测试
 │       └── test_students.py # 学生类单元测试
 ├── config.py               # 配置文件
+├── IFLOW.md                # 项目说明文档
 ├── main.py                 # 主程序入口
+├── seat_simulation_env.yml # Conda环境配置文件
+├── simple_test.py          # 简单测试脚本
 ├── start.py                # 启动脚本
 ├── utils.py                # 工具函数，包含API配置
-├── seat_simulation_env.yml # Conda环境配置文件
 └── 要求.txt               # 项目需求文档
 ```
 
@@ -118,10 +121,13 @@ python main.py
 - `test_seats.py`: 座位类的完整单元测试，覆盖所有状态转换场景
 - `test_prompt.py`: 提示词功能测试
 - `test_students.py`: 学生类的完整单元测试，覆盖学生行为的各种场景
-  - 测试学生初始化、日程表生成
-  - 测试座位选择、占用和离开逻辑
-  - 测试占座决策逻辑
-  - 测试时间更新和状态转换
+- `test_interactions.py`: 座位、学生和图书馆之间交互的综合测试
+  - 测试学生与座位的基本交互
+  - 测试占座行为
+  - 测试图书馆的占座标记和清理系统
+  - 测试基于学生日程的交互
+  - 测试座位舒适度和拥挤度计算
+  - 测试图书馆座位计数功能
 
 运行测试：
 ```bash
@@ -129,6 +135,7 @@ python -m pytest backend/test/
 # 或
 python backend/test/test_seats.py
 python backend/test/test_students.py
+python backend/test/test_interactions.py
 ```
 
 ## 模拟特性
@@ -140,6 +147,7 @@ python backend/test/test_students.py
 - **座位初始化**: 20x20网格中的座位，随机分配台灯、插座属性，边缘座位为靠窗座位
 - **座位状态管理**: 包括占用时间跟踪和状态转换
 - **学生类型**: 支持3种专业(人文、科学、工程)和3种学习程度(勤奋、中等、懒惰)的学生，共9种不同类型的学生
+- **交互测试**: 包含综合交互测试，验证系统各组件间的协作关系
 
 ## 提示词系统 (prompt.py)
 
@@ -157,7 +165,7 @@ python backend/test/test_students.py
 
 ## 项目状态
 
-目前项目架构已建立，包含完整的座位管理系统、学生系统、LLM客户端和提示词系统。测试用例已实现，特别是座位系统和学生系统的单元测试覆盖了各种场景。图书馆系统已实现基本功能，包括座位初始化、学生初始化和管理功能。
+目前项目架构已建立，包含完整的座位管理系统、学生系统、LLM客户端和提示词系统。测试用例已实现，特别是座位系统、学生系统和交互测试覆盖了各种场景。图书馆系统已实现基本功能，包括座位初始化、学生初始化和管理功能。
 
 **待完善部分：**
 - main.py 需要实现完整的模拟流程
