@@ -73,6 +73,10 @@ class Library:
             students_number (int): 要创建的学生数量
             type (str): 专业类型（'humanities', 'science', 'engineering'）
         """
+        # 记录初始学生数量
+        initial_student_count = len(self.students)
+        initial_count = self._count
+
         # 生成随机数列表，用于分配学生类型
         _list = self._random_assign(students_number)
         # 根据随机数范围将学生分为三类：勤奋（>=0.7）、中等（0.3-0.7）、懒惰（<=0.3）
@@ -81,60 +85,82 @@ class Library:
         lazy_list = [i<=0.3 for i in _list]
 
         # 根据专业类型创建对应专业及能力的学生
+        # 使用全局计数器来确保ID连续，而不是使用过滤后的索引
         match type:
             case 'humanities':  # 文科专业
-                # 创建勤奋的文科生（随机数>=0.7的）
-                new_students = [Student.create_humanities_diligent_student(self._count + idx)  # idx 是过滤后的索引，避免 count 断层
-                               for idx, is_diligent in enumerate(diligent_list) if is_diligent
-                               ]
-                self.students.extend(new_students)
-                self._count += len(new_students)
+                for idx, is_diligent in enumerate(diligent_list):
+                    if is_diligent:
+                        new_student = Student.create_humanities_diligent_student(self._count)
+                        self.students.append(new_student)
+                        self._count += 1
                 
                 # 创建中等程度的文科生（0.3<随机数<0.7的）
-                new_students = [Student.create_humanities_medium_student(self._count + idx)  
-                               for idx, is_medium in enumerate(medium_list) if is_medium]  
-                self.students.extend(new_students)
-                self._count += len(new_students)
+                for idx, is_medium in enumerate(medium_list):
+                    if is_medium:
+                        new_student = Student.create_humanities_medium_student(self._count)
+                        self.students.append(new_student)
+                        self._count += 1
                 
                 # 创建懒惰的文科生（随机数<=0.3的）
-                new_students = [Student.create_humanities_lazy_student(self._count + idx)  
-                               for idx, is_lazy in enumerate(lazy_list) if is_lazy]  
-                self.students.extend(new_students)
-                self._count += len(new_students)
+                for idx, is_lazy in enumerate(lazy_list):
+                    if is_lazy:
+                        new_student = Student.create_humanities_lazy_student(self._count)
+                        self.students.append(new_student)
+                        self._count += 1
 
             case 'science':  # 理科专业
-                new_students = [Student.create_science_diligent_student(self._count + idx)
-                               for idx, is_diligent in enumerate(diligent_list) if is_diligent
-                               ]
-                self.students.extend(new_students)
-                self._count += len(new_students)
+                for idx, is_diligent in enumerate(diligent_list):
+                    if is_diligent:
+                        new_student = Student.create_science_diligent_student(self._count)
+                        self.students.append(new_student)
+                        self._count += 1
                 
-                new_students = [Student.create_science_medium_student(self._count + idx)  
-                               for idx, is_medium in enumerate(medium_list) if is_medium]  
-                self.students.extend(new_students)
-                self._count += len(new_students)
+                for idx, is_medium in enumerate(medium_list):
+                    if is_medium:
+                        new_student = Student.create_science_medium_student(self._count)
+                        self.students.append(new_student)
+                        self._count += 1
                 
-                new_students = [Student.create_science_lazy_student(self._count + idx)  
-                               for idx, is_lazy in enumerate(lazy_list) if is_lazy]  
-                self.students.extend(new_students)
-                self._count += len(new_students)
+                for idx, is_lazy in enumerate(lazy_list):
+                    if is_lazy:
+                        new_student = Student.create_science_lazy_student(self._count)
+                        self.students.append(new_student)
+                        self._count += 1
 
             case 'engineering':  # 工科专业
-                new_students = [Student.create_engineering_diligent_student(self._count + idx)
-                               for idx, is_diligent in enumerate(diligent_list) if is_diligent
-                               ]
-                self.students.extend(new_students)
-                self._count += len(new_students)
+                for idx, is_diligent in enumerate(diligent_list):
+                    if is_diligent:
+                        new_student = Student.create_engineering_diligent_student(self._count)
+                        self.students.append(new_student)
+                        self._count += 1
                 
-                new_students = [Student.create_engineering_medium_student(self._count + idx)  
-                               for idx, is_medium in enumerate(medium_list) if is_medium]  
-                self.students.extend(new_students)
-                self._count += len(new_students)
+                for idx, is_medium in enumerate(medium_list):
+                    if is_medium:
+                        new_student = Student.create_engineering_medium_student(self._count)
+                        self.students.append(new_student)
+                        self._count += 1
                 
-                new_students = [Student.create_engineering_lazy_student(self._count + idx)  
-                               for idx, is_lazy in enumerate(lazy_list) if is_lazy]  
-                self.students.extend(new_students)
-                self._count += len(new_students)
+                for idx, is_lazy in enumerate(lazy_list):
+                    if is_lazy:
+                        new_student = Student.create_engineering_lazy_student(self._count)
+                        self.students.append(new_student)
+                        self._count += 1
+
+        # 如果没有创建任何学生（可能由于随机分配导致），创建一个默认类型的学生
+        # 但只在students_number > 0时才这样做
+        if students_number > 0 and len(self.students) == initial_student_count:
+            # 根据专业类型创建一个默认中等类型的学生
+            match type:
+                case 'humanities':
+                    new_student = Student.create_humanities_medium_student(self._count)
+                case 'science':
+                    new_student = Student.create_science_medium_student(self._count)
+                case 'engineering':
+                    new_student = Student.create_engineering_medium_student(self._count)
+                case _:
+                    new_student = Student.create_engineering_medium_student(self._count)  # 默认情况
+            self.students.append(new_student)
+            self._count += 1
 
     def initialize_students(self,num:int=200,humanities:float=0.3,science:float=0.3):
         """
@@ -166,8 +192,8 @@ class Library:
             self.limit_reversed_time = time  # 直接设置timedelta对象
         elif isinstance(time,str):
             time_list = time.split(":")  # 分割时间字符串
-            hour = eval(time_list[0])  # 解析小时
-            minute = eval(time_list[1])  # 解析分钟
+            hour = int(time_list[0])  # 解析小时
+            minute = int(time_list[1])  # 解析分钟
             self.limit_reversed_time = timedelta(hours=hour,minutes=minute)  # 创建timedelta对象
         else:
             raise TypeError  # 如果不是以上两种类型，抛出类型错误
