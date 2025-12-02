@@ -24,6 +24,7 @@ class Library:
         self._count = 0  # 学生ID计数器，确保每个学生有唯一ID
         self.limit_reversed_time = timedelta(hours=1)  # 占座时间限制，超过此时间的占座将被清理
         self.unsatisfied = 0  # 不满意计数器，记录因没有座位而无法学习的学生数
+        self.count_cleared_seat = 0
 
     @staticmethod
     def _random_assign(random_num:int):
@@ -275,6 +276,7 @@ class Library:
                 # 计算座位占用时间是否超过限制
                 if seat.taken_time - datetime(1900,1,1,7) > self.limit_reversed_time:
                     seat.clear()  # 清理该座位
+                    self.count_cleared_seat += 1
 
     def get_unsatisfied(self):
         """

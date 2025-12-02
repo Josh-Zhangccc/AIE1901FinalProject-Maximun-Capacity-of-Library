@@ -66,6 +66,11 @@ class Simulation:
                     break
                 elif command == "help":
                     self.show_help()
+                elif command == "run all":
+                    while f"{self.library.current_time.strftime('%H:%M')}" != "00:00":
+                        self.step()
+                        self.jm.save_json()
+                    break
                 else:
                     print("未知命令，输入 'help' 查看可用命令")
                     
@@ -88,6 +93,7 @@ class Simulation:
         current_state = {"time":self.library.current_time.strftime('%H:%M'),
                          "seats_taken_state":self.library.output_seats_taken_state(),
                          "unstisfied_num":self.library.unsatisfied,
+                         "cleared_seats":self.library.count_cleared_seat,
                          "reversed_seats":reversed_seats,
                          "taken_rate":f" {taken_seats} ({taken_seats/total_seats*100:.1f}%)"}
         self.jm.data.append(current_state) # type: ignore

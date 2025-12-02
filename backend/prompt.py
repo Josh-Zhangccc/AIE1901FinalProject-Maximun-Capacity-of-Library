@@ -42,7 +42,7 @@ schedule_prompt = """你是一个图书馆学生行为模拟器。请根据以�
 {{"time":"20:00:00","action":"rest"}},
 {{"time":"20:30:00","action":"end"}}
 ]
-注意：start必须在07:00:00，而早餐的eat的时间不可以与start相同,end之前必须进行rest行为
+注意：start必须在07:00:00，而早餐的eat的时间不可以与start相同,end之前必须进行rest行为,rest和end的时间不可以重合
 请严格按照以下JSON格式回复，不要添加其他内容：
 [{{"time":"xx:xx:00","action":"(六种行为之一)"}}]
 """

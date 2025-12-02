@@ -1,4 +1,6 @@
 from backend.simulation import Simulation
+from backend.plot import plot_simulation
+from config import simulation_file_path,test_simulation_path
 import os
 current_dir = os.path.dirname(os.path.abspath(__file__))
     # 将工作目录设置为脚本所在目录
@@ -15,8 +17,10 @@ def main():
     if not simulation_type:
         simulation_type = "simulation"
     name = input("命名本次模拟为：")
-    sim = Simulation(name, row=3, column=3, num_students=10, simulation_type=simulation_type) 
+    sim = Simulation(name, row=3, column=3, num_students=18, simulation_type=simulation_type) 
     sim.run()
-
+    path = simulation_file_path if simulation_type=="simulation"else test_simulation_path
+    file_path = os.path.join(path,f"{name}.json")
+    plot_simulation(file_path)
 if __name__ == "__main__":
     main()
