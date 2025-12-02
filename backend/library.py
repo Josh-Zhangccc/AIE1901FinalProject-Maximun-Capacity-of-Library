@@ -17,7 +17,7 @@ class Library:
         创建20x20网格的座位系统和学生群体，并设置初始时间和参数
         """
         self.seats:list[Seat] = []  # 存储所有座位对象的列表
-        self.seats_map = {}  # 座位坐标到座位对象的映射，用于快速查找
+        self.seats_map:dict[tuple[int,int],Seat] = {}  # 座位坐标到座位对象的映射，用于快速查找
         self.students:list[Student] = []  # 存储所有学生对象的列表
         self.current_time = datetime(1900,1,1,7)  # 当前模拟时间，从早上7点开始
         self.time_delta = timedelta(minutes=15)  # 时间更新步长，图书馆时间更新为15分钟
@@ -40,7 +40,7 @@ class Library:
         random_nums = [random.random() for _ in range(random_num)] #@list
         return random_nums
 
-    def initialize_seats(self,row,column,lamp_rate:float=0.5,socket_rate:float=0.5):
+    def initialize_seats(self,row:int,column:int,lamp_rate:float=0.5,socket_rate:float=0.5):
         """
         初始化座位系统，在20x20网格中创建400个座位
         随机分配台灯和插座属性，边缘座位自动为靠窗座位
@@ -49,6 +49,8 @@ class Library:
             lamp_rate (float): 座位有台灯的概率，默认为0.5
             socket_rate (float): 座位有插座的概率，默认为0.5
         """
+        self.rows = row
+        self.columns = column
         self.seats.clear()  # 清空现有座位列表
         # 生成400个随机数用于决定是否分配台灯和插座
         lamp_list = [lamp>=lamp_rate for lamp in self._random_assign(row*column)]  # 生成400个随机值
@@ -63,6 +65,38 @@ class Library:
         # 构建座位坐标到座位对象的映射，便于后续查找
         for seat in self.seats:
             self.seats_map[seat.coordinate] = seat
+
+    def visualize_seats_taken_state(self):
+        print("\n","="*self.rows*4)
+        print("   ",end =" ")
+        for row in range(self.rows):
+            print(row,end = "  "if len(str(row))==1 else" ")
+        for column in range(self.columns):
+            print("\n",column,end="  "if len(str(column))==1 else " ")
+            for row in range(self.rows):
+                seat = self.seats_map.get((row,column),Seat(-1,-1))
+                taken_state = seat.status
+                print(taken_state.value,end="  ")
+
+    def visualize_seats_infomation(self):
+        print("\n","="*self.rows*4)
+        print("   ",end =" ")
+        for row in range(self.rows):
+            print(row,end = "  "if len(str(row))==1 else" ")
+        for column in range(self.columns):
+            print("\n",column,end="  "if len(str(column))==1 else " ")
+            for row in range(self.rows):
+                seat = self.seats_map.get((row,column),Seat(-1,-1))
+                output = "N"
+                lamp = seat.lamp
+                socket = seat.socket
+                if lamp and socket: #both true
+                    output = "B"
+                elif lamp and not socket:   #lamp
+                    output = "L"
+                elif not lamp and socket: 
+                    output = "S"
+                print(output,end="  ")
 
     def _init_students_with_different_major(self,students_number:int,type:str):
         """

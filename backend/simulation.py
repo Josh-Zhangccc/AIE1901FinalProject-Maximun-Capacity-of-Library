@@ -38,6 +38,8 @@ class Simulation:
         """
         print("图书馆座位占用行为模拟系统已启动")
         print("输入 'help' 查看可用命令")
+        print("当前图书馆座位信息为：")
+        self.library.visualize_seats_infomation()
         
         while True:
             try:
@@ -95,29 +97,7 @@ class Simulation:
         显示座位网格状态
         使用符号表示不同座位状态：V空闲，O占用，R占座，S标记
         """
-        # 确定网格大小
-        max_x = max(seat.coordinate[0] for seat in self.library.seats) + 1
-        max_y = max(seat.coordinate[1] for seat in self.library.seats) + 1
-        
-        # 创建二维网格表示座位状态
-        grid = [['V' for _ in range(max_y)] for _ in range(max_x)]
-        
-        for seat in self.library.seats:
-            x, y = seat.coordinate
-            if 0 <= x < max_x and 0 <= y < max_y:  # 确保坐标在范围内
-                if seat.status.name == 'vacant':
-                    grid[x][y] = 'V'
-                elif seat.status.name == 'taken':
-                    grid[x][y] = 'O'
-                elif seat.status.name == 'reverse':
-                    grid[x][y] = 'R'
-                elif seat.status.name == 'signed':
-                    grid[x][y] = 'S'
-        
-        # 打印网格
-        print(f"座位状态图 (V:空闲, O:占用, R:占座, S:标记) - {max_x}x{max_y}网格")
-        for row in grid:
-            print(''.join(row))
+        self.library.visualize_seats_taken_state()
 
     def show_time(self):
         """
