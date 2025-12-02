@@ -30,24 +30,12 @@ AIE1901_FinalExamSimulation/
 │       ├── test_prompt.py  # 提示词功能测试
 │       ├── test_seats.py   # 座位类单元测试
 │       └── test_students.py # 学生类单元测试
-├── config.py               # 配置文件
 ├── IFLOW.md                # 项目说明文档
 ├── main.py                 # 主程序入口
-├── seat_simulation_env.yml # Conda环境配置文件
-├── simple_test.py          # 简单测试脚本
-├── simple_check.py         # 简单检查脚本
-├── specific_test.py        # 特定功能测试脚本
-├── comprehensive_test.py   # 综合测试脚本
-├── debug_test.py           # 调试测试脚本
-├── final_test.py           # 最终测试脚本
-├── long_test.py            # 长时间测试脚本
 ├── problem_check.py        # 问题检查脚本
-├── test_seats_fixed.py     # 修复后的座位测试
-├── test_simulation.py      # 模拟系统测试脚本
-├── start.py                # Python启动脚本
-├── start-app.bat           # Windows批处理启动脚本
+├── seat_simulation_env.yml # Conda环境配置文件
+├── test_students.py        # 学生测试脚本
 ├── utils.py                # 工具函数，包含API配置
-├── code_issue_report.md    # 代码问题报告文档
 └── 要求.txt               # 项目需求文档
 ```
 
@@ -129,14 +117,9 @@ conda activate seat-simulation
 python main.py
 ```
 
-或者使用Windows批处理文件：
-```bash
-start-app.bat
-```
-
 ## 测试
 
-项目包含多种测试，位于`backend/test/`目录下及根目录下：
+项目包含多种测试，位于`backend/test/`目录下：
 - `test_seats.py`: 座位类的完整单元测试，覆盖所有状态转换场景
 - `test_prompt.py`: 提示词功能测试
 - `test_students.py`: 学生类的完整单元测试，覆盖学生行为的各种场景
@@ -147,9 +130,6 @@ start-app.bat
   - 测试基于学生日程的交互
   - 测试座位舒适度和拥挤度计算
   - 测试图书馆座位计数功能
-- `debug_test.py`: 调试测试脚本，用于跟踪模拟过程中的状态变化
-- `final_test.py`: 最终测试脚本，验证系统基本功能
-- `test_simulation.py`: 模拟系统测试脚本，验证模拟框架功能
 
 运行测试：
 ```bash
@@ -158,9 +138,7 @@ python -m pytest backend/test/
 python backend/test/test_seats.py
 python backend/test/test_students.py
 python backend/test/test_interactions.py
-python debug_test.py
-python final_test.py
-python test_simulation.py
+python problem_check.py  # 根目录的问题检查脚本
 ```
 
 ## 模拟特性

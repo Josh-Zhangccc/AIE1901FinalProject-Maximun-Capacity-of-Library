@@ -27,7 +27,7 @@ class Clients:
                 {'role':'system','content':prompt}
             ],
             stream=False,
-            temperature=0.7,
+            temperature=0.9,
             max_tokens=1000,
             top_p=0.95,
             frequency_penalty=0.0,

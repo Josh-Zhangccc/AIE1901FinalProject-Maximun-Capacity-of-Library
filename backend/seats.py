@@ -32,7 +32,7 @@ class Seat:
         self.socket = socket      # 是否有插座，影响学生满意度
         self.status = Status.vacant  # 座位状态，初始为空闲
         self.owner = None         # 座位当前使用者ID（学生索引），无使用者时为None
-        self.taken_time = datetime(1900,1,1,7,0,0)  # 座位被占用的时间，用于计算占座时长
+        self.taken_time = datetime(1900,1,1,7)  # 座位被占用的时间，用于计算占座时长
         self.window = False       # 是否靠窗，边缘座位自动为靠窗座位，影响学生满意度
         # 判断是否为靠窗座位：x或y为0表示左边缘或上边缘，x或y为19表示右边缘或下边缘
         if x == 0 or y == 0 or x == 19 or y == 19:
@@ -57,7 +57,7 @@ class Seat:
         每次模拟时间步进时调用，仅对非空闲座位更新占用时间
         用于跟踪占座时长，以便后续判断是否超时
         """
-        if self.taken_hours() != 0:  # 只有被占用的座位才更新时间
+        if self.status == Status.signed:  # 只有被占用的座位才更新时间
             self.taken_time += self.time_delta
             
     def take(self,student_index):

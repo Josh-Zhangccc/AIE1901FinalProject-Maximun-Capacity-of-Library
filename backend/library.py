@@ -242,6 +242,7 @@ class Library:
         推进时间，更新座位和学生状态，处理学生行为
         这是模拟系统的核心更新函数
         """
+        self.clear_seat()
         self.current_time+=self.time_delta  # 推进系统时间
         # 更新所有学生状态和行为
         for student in self.students:
@@ -251,6 +252,8 @@ class Library:
         for seat in self.seats:
             seat.update()  # 更新座位时间
             self.calculate_each_seat_crowded_para()  # 计算座位拥挤参数
+        self.sign_seat()
+        
 
     def sign_seat(self):
         """
@@ -259,8 +262,7 @@ class Library:
         图书馆管理员定期检查时调用此方法
         """
         for seat in self.seats:
-            if seat.status == Status.reverse:  # 只标记占座状态的座位
-                seat.sign()
+            seat.sign()
 
     def clear_seat(self):
         """
@@ -271,7 +273,7 @@ class Library:
         for seat in self.seats:
             if seat.status == Status.signed:  # 只清理已被标记的座位
                 # 计算座位占用时间是否超过限制
-                if seat.taken_time - datetime(1900,1,1,7) >= self.limit_reversed_time:
+                if seat.taken_time - datetime(1900,1,1,7) > self.limit_reversed_time:
                     seat.clear()  # 清理该座位
 
     def get_unsatisfied(self):
@@ -414,6 +416,30 @@ class Library:
                         crowded_para += 1  # 拥挤参数加1
                     if around_seat.window:  # 如果邻近是窗户
                         crowded_para -= 0.5  # 窗户减少拥挤感
-            # 计算平均拥挤度
-            crowded_para /= len_around_seat
+            # 计算平均拥度
+            crowded_para =crowded_para/len_around_seat if len_around_seat>0 else 0
             seat.set_crowded_para(crowded_para)  # 设置座位的拥挤参数
+
+    def output_seats_info(self):
+        dic = {}
+        for coordinate,seat in self.seats_map.items():
+            output = "N"
+            lamp = seat.lamp
+            socket = seat.socket
+            if lamp and socket: #both true
+                output = "B"
+            elif lamp and not socket:   #lamp
+                output = "L"
+            elif not lamp and socket: 
+                output = "S"
+            x,y = coordinate
+            dic[f"{x},{y}"] = output
+        return dic
+    
+    def output_seats_taken_state(self):
+        dic = {}
+        for coordinate,seat in self.seats_map.items():
+            output = seat.status.value
+            x,y = coordinate
+            dic[f"{x},{y}"] = output
+        return dic

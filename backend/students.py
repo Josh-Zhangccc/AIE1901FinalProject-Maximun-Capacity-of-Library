@@ -27,7 +27,7 @@ class Student:
             1.选择座位
             2.状态改变
     """
-    def __init__(self,student_id,student_para:dict,seat_preference:dict) -> None:
+    def __init__(self,student_id,student_para:dict,seat_preference:dict,schedule = None) -> None:
         """
         初始化学生对象
 
@@ -50,7 +50,7 @@ class Student:
         self.state = StudentState.GONE  # 当前状态，默认为离开状态
         self.client = Clients()  # LLM客户端，用于智能决策
         self.schedule = []  # 学生日程表，由LLM生成
-        self.generate_schedule()  # 初始化时生成日程表
+        self.generate_schedule(schedule)  # 初始化时生成日程表
         self.current_time = datetime(1900,1,1,7,0,0)  # 当前时间，从7:00:00开始
         self.time_delta = timedelta(minutes=15)  # 时间更新步长，与座位时间同步
         self.know_library_limit_reverse_time(timedelta(hours=1))  # 了解图书馆占座时间限制
@@ -86,12 +86,15 @@ class Student:
                              "focus_type":focus_type,
                              "course_situation":course_situation}
 
-    def generate_schedule(self):
+    def generate_schedule(self,schedule = None):
         """
         使用LLM生成学生日程表
         根据学生的个人属性生成一天的学习、生活安排
         日程表包含时间点和对应的行为动作
         """
+        if schedule:
+            self.schedule = schedule
+
         from .prompt import schedule_prompt
         formatted_prompt = schedule_prompt.format(
             schedule_type=self.student_para["schedule_type"],

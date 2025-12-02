@@ -5,14 +5,15 @@ simulation.py
 """
 from .library import Library
 from datetime import datetime, timedelta
-
-
+from .json_manager import JsonManager
+from config import simulation_file_path,test_simulation_path
+import os
 class Simulation:
     """
     模拟主类，协调图书馆、学生和座位系统
     提供交互式命令行界面，支持 step, status, seats, time, quit, help 命令
     """
-    def __init__(self, row=20, column=20, num_students=200, humanities_rate=0.3, science_rate=0.3):
+    def __init__(self,name:str,row=20, column=20, num_students=200, humanities_rate=0.3, science_rate=0.3,simulation_type="simulation"):
         """
         初始化模拟系统
 
@@ -30,6 +31,10 @@ class Simulation:
         
         # 设置默认的占座时间限制为1小时
         self.library.set_limit_reversed_time(timedelta(hours=1))
+        scale = str(row)+"*"+str(column)+f"->{num_students}"
+        stru:list[dict] = [{"test_name":name,"test_scale":scale,"seat_info":self.library.output_seats_info()}]
+        path = simulation_file_path if simulation_type=="simulation"else test_simulation_path
+        self.jm = JsonManager(os.path.join(path,f"{name}.json"),stru)
 
     def run(self):
         """
@@ -57,6 +62,7 @@ class Simulation:
                     self.set_limit_time(command)
                 elif command == "quit" or command == "exit":
                     print("退出模拟系统")
+                    self.jm.save_json()
                     break
                 elif command == "help":
                     self.show_help()
@@ -75,6 +81,16 @@ class Simulation:
         更新图书馆系统状态，包括时间推进、座位和学生状态更新
         """
         self.library.update()
+        total_seats = len(self.library.seats)
+        taken_seats = self.library.count_taken_seats()
+        reversed_seats = self.library.count_reversed_seats()
+
+        current_state = {"time":self.library.current_time.strftime('%H:%M'),
+                         "seats_taken_state":self.library.output_seats_taken_state(),
+                         "unstisfied_num":self.library.unsatisfied,
+                         "reversed_seats":reversed_seats,
+                         "taken_rate":f" {taken_seats} ({taken_seats/total_seats*100:.1f}%)"}
+        self.jm.data.append(current_state) # type: ignore
 
     def show_status(self):
         """
@@ -95,7 +111,7 @@ class Simulation:
     def show_seats(self):
         """
         显示座位网格状态
-        使用符号表示不同座位状态：V空闲，O占用，R占座，S标记
+        使用符号表示不同座位状态：V空闲，T占用，R占座，S标记
         """
         self.library.visualize_seats_taken_state()
 
@@ -138,11 +154,5 @@ class Simulation:
         print("  seats    - 显示座位网格状态")
         print("  time     - 显示当前模拟时间")
         print("  set_limit HH:MM - 设置占座时间限制")
-        print("  quit/exit - 退出模拟")
+        print("  quit/exit - 退出模拟并保存")
         print("  help     - 显示此帮助信息")
-
-if __name__ == "__main__":
-    # 创建模拟实例并运行
-    # 使用较小的规模进行演示
-    sim = Simulation(row=5, column=5, num_students=10)
-    sim.run()
