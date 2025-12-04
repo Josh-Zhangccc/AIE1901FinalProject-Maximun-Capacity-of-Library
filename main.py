@@ -1,5 +1,5 @@
 from backend.simulation import Simulation
-from backend.plot import plot_simulation
+from backend.plot import save_figure
 from config import simulation_file_path,test_simulation_path
 import os
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -18,9 +18,9 @@ def main():
         simulation_type = "simulation"
     name = input("命名本次模拟为：")
     sim = Simulation(name, row=3, column=3, num_students=18, simulation_type=simulation_type) 
-    sim.run()
+    sim.run(run_all=True)
     path = simulation_file_path if simulation_type=="simulation"else test_simulation_path
     file_path = os.path.join(path,f"{name}.json")
-    plot_simulation(file_path)
+    save_figure(file_path)
 if __name__ == "__main__":
     main()

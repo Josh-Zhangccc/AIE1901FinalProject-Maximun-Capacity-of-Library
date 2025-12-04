@@ -1,7 +1,7 @@
 [
   {
     "test_name": "9-11",
-    "test_scale": "3*3->10",
+    "test_scale": "3*3->11",
     "seat_info": {
       "0,0": "N",
       "0,1": "B",
@@ -180,7 +180,7 @@
     "time": "09:30",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "T",
+      "0,1": "V",
       "0,2": "V",
       "1,0": "V",
       "1,1": "V",
@@ -192,13 +192,13 @@
     "unstisfied_num": 0,
     "cleared_seats": 0,
     "reversed_seats": 0,
-    "taken_rate": " 1 (11.1%)"
+    "taken_rate": " 0 (0.0%)"
   },
   {
     "time": "09:45",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "T",
+      "0,1": "V",
       "0,2": "V",
       "1,0": "V",
       "1,1": "V",
@@ -210,7 +210,7 @@
     "unstisfied_num": 0,
     "cleared_seats": 0,
     "reversed_seats": 0,
-    "taken_rate": " 1 (11.1%)"
+    "taken_rate": " 0 (0.0%)"
   },
   {
     "time": "10:00",
@@ -233,9 +233,9 @@
   {
     "time": "10:15",
     "seats_taken_state": {
-      "0,0": "V",
+      "0,0": "T",
       "0,1": "T",
-      "0,2": "V",
+      "0,2": "T",
       "1,0": "T",
       "1,1": "V",
       "1,2": "V",
@@ -246,7 +246,7 @@
     "unstisfied_num": 0,
     "cleared_seats": 0,
     "reversed_seats": 0,
-    "taken_rate": " 3 (33.3%)"
+    "taken_rate": " 5 (55.6%)"
   },
   {
     "time": "10:30",
@@ -258,13 +258,13 @@
       "1,1": "V",
       "1,2": "V",
       "2,0": "T",
-      "2,1": "V",
+      "2,1": "T",
       "2,2": "V"
     },
     "unstisfied_num": 0,
     "cleared_seats": 0,
     "reversed_seats": 0,
-    "taken_rate": " 5 (55.6%)"
+    "taken_rate": " 6 (66.7%)"
   },
   {
     "time": "10:45",
@@ -276,13 +276,13 @@
       "1,1": "V",
       "1,2": "V",
       "2,0": "T",
-      "2,1": "V",
+      "2,1": "T",
       "2,2": "V"
     },
     "unstisfied_num": 0,
     "cleared_seats": 0,
     "reversed_seats": 0,
-    "taken_rate": " 5 (55.6%)"
+    "taken_rate": " 6 (66.7%)"
   },
   {
     "time": "11:00",
@@ -294,13 +294,13 @@
       "1,1": "V",
       "1,2": "V",
       "2,0": "T",
-      "2,1": "V",
+      "2,1": "T",
       "2,2": "V"
     },
     "unstisfied_num": 0,
     "cleared_seats": 0,
     "reversed_seats": 0,
-    "taken_rate": " 5 (55.6%)"
+    "taken_rate": " 6 (66.7%)"
   },
   {
     "time": "11:15",
@@ -312,13 +312,13 @@
       "1,1": "V",
       "1,2": "V",
       "2,0": "T",
-      "2,1": "V",
+      "2,1": "T",
       "2,2": "V"
     },
     "unstisfied_num": 0,
     "cleared_seats": 0,
     "reversed_seats": 0,
-    "taken_rate": " 5 (55.6%)"
+    "taken_rate": " 6 (66.7%)"
   },
   {
     "time": "11:30",
@@ -330,13 +330,13 @@
       "1,1": "V",
       "1,2": "V",
       "2,0": "T",
-      "2,1": "V",
+      "2,1": "T",
       "2,2": "V"
     },
     "unstisfied_num": 0,
     "cleared_seats": 0,
     "reversed_seats": 0,
-    "taken_rate": " 5 (55.6%)"
+    "taken_rate": " 6 (66.7%)"
   },
   {
     "time": "11:45",
@@ -348,121 +348,121 @@
       "1,1": "V",
       "1,2": "V",
       "2,0": "T",
-      "2,1": "V",
+      "2,1": "T",
       "2,2": "V"
     },
     "unstisfied_num": 0,
     "cleared_seats": 0,
     "reversed_seats": 0,
-    "taken_rate": " 5 (55.6%)"
+    "taken_rate": " 6 (66.7%)"
   },
   {
     "time": "12:00",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "T",
+      "0,1": "V",
       "0,2": "V",
       "1,0": "V",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "T",
+      "2,0": "V",
       "2,1": "V",
       "2,2": "V"
     },
     "unstisfied_num": 0,
     "cleared_seats": 0,
     "reversed_seats": 0,
-    "taken_rate": " 2 (22.2%)"
+    "taken_rate": " 0 (0.0%)"
   },
   {
     "time": "12:15",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "T",
+      "0,1": "V",
       "0,2": "V",
       "1,0": "V",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "T",
+      "2,0": "V",
       "2,1": "V",
       "2,2": "V"
     },
     "unstisfied_num": 0,
     "cleared_seats": 0,
     "reversed_seats": 0,
-    "taken_rate": " 2 (22.2%)"
+    "taken_rate": " 0 (0.0%)"
   },
   {
     "time": "12:30",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "T",
+      "0,1": "V",
       "0,2": "V",
       "1,0": "V",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "T",
+      "2,0": "V",
       "2,1": "V",
       "2,2": "V"
     },
     "unstisfied_num": 0,
     "cleared_seats": 0,
     "reversed_seats": 0,
-    "taken_rate": " 2 (22.2%)"
+    "taken_rate": " 0 (0.0%)"
   },
   {
     "time": "12:45",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "T",
+      "0,1": "V",
       "0,2": "V",
       "1,0": "V",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "T",
+      "2,0": "V",
       "2,1": "V",
       "2,2": "V"
     },
     "unstisfied_num": 0,
     "cleared_seats": 0,
     "reversed_seats": 0,
-    "taken_rate": " 2 (22.2%)"
+    "taken_rate": " 0 (0.0%)"
   },
   {
     "time": "13:00",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "T",
+      "0,1": "V",
       "0,2": "V",
       "1,0": "V",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "S",
+      "2,0": "V",
       "2,1": "V",
       "2,2": "V"
     },
     "unstisfied_num": 0,
     "cleared_seats": 0,
-    "reversed_seats": 1,
-    "taken_rate": " 2 (22.2%)"
+    "reversed_seats": 0,
+    "taken_rate": " 0 (0.0%)"
   },
   {
     "time": "13:15",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "T",
+      "0,1": "V",
       "0,2": "V",
       "1,0": "V",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "S",
+      "2,0": "V",
       "2,1": "V",
       "2,2": "V"
     },
     "unstisfied_num": 0,
     "cleared_seats": 0,
-    "reversed_seats": 1,
-    "taken_rate": " 2 (22.2%)"
+    "reversed_seats": 0,
+    "taken_rate": " 0 (0.0%)"
   },
   {
     "time": "13:30",
@@ -473,14 +473,14 @@
       "1,0": "V",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "S",
+      "2,0": "V",
       "2,1": "V",
       "2,2": "V"
     },
     "unstisfied_num": 0,
     "cleared_seats": 0,
-    "reversed_seats": 1,
-    "taken_rate": " 2 (22.2%)"
+    "reversed_seats": 0,
+    "taken_rate": " 1 (11.1%)"
   },
   {
     "time": "13:45",
@@ -488,60 +488,6 @@
       "0,0": "V",
       "0,1": "T",
       "0,2": "V",
-      "1,0": "V",
-      "1,1": "V",
-      "1,2": "V",
-      "2,0": "S",
-      "2,1": "V",
-      "2,2": "V"
-    },
-    "unstisfied_num": 0,
-    "cleared_seats": 0,
-    "reversed_seats": 1,
-    "taken_rate": " 2 (22.2%)"
-  },
-  {
-    "time": "14:00",
-    "seats_taken_state": {
-      "0,0": "V",
-      "0,1": "S",
-      "0,2": "T",
-      "1,0": "T",
-      "1,1": "V",
-      "1,2": "V",
-      "2,0": "S",
-      "2,1": "V",
-      "2,2": "V"
-    },
-    "unstisfied_num": 0,
-    "cleared_seats": 0,
-    "reversed_seats": 2,
-    "taken_rate": " 4 (44.4%)"
-  },
-  {
-    "time": "14:15",
-    "seats_taken_state": {
-      "0,0": "T",
-      "0,1": "S",
-      "0,2": "T",
-      "1,0": "T",
-      "1,1": "V",
-      "1,2": "V",
-      "2,0": "S",
-      "2,1": "V",
-      "2,2": "V"
-    },
-    "unstisfied_num": 0,
-    "cleared_seats": 0,
-    "reversed_seats": 2,
-    "taken_rate": " 5 (55.6%)"
-  },
-  {
-    "time": "14:30",
-    "seats_taken_state": {
-      "0,0": "T",
-      "0,1": "S",
-      "0,2": "T",
       "1,0": "T",
       "1,1": "V",
       "1,2": "V",
@@ -550,8 +496,62 @@
       "2,2": "V"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 1,
-    "reversed_seats": 1,
+    "cleared_seats": 0,
+    "reversed_seats": 0,
+    "taken_rate": " 3 (33.3%)"
+  },
+  {
+    "time": "14:00",
+    "seats_taken_state": {
+      "0,0": "V",
+      "0,1": "T",
+      "0,2": "V",
+      "1,0": "T",
+      "1,1": "V",
+      "1,2": "V",
+      "2,0": "T",
+      "2,1": "V",
+      "2,2": "V"
+    },
+    "unstisfied_num": 0,
+    "cleared_seats": 0,
+    "reversed_seats": 0,
+    "taken_rate": " 3 (33.3%)"
+  },
+  {
+    "time": "14:15",
+    "seats_taken_state": {
+      "0,0": "V",
+      "0,1": "T",
+      "0,2": "V",
+      "1,0": "T",
+      "1,1": "V",
+      "1,2": "V",
+      "2,0": "T",
+      "2,1": "V",
+      "2,2": "V"
+    },
+    "unstisfied_num": 0,
+    "cleared_seats": 0,
+    "reversed_seats": 0,
+    "taken_rate": " 3 (33.3%)"
+  },
+  {
+    "time": "14:30",
+    "seats_taken_state": {
+      "0,0": "T",
+      "0,1": "T",
+      "0,2": "T",
+      "1,0": "T",
+      "1,1": "V",
+      "1,2": "V",
+      "2,0": "V",
+      "2,1": "T",
+      "2,2": "V"
+    },
+    "unstisfied_num": 0,
+    "cleared_seats": 0,
+    "reversed_seats": 0,
     "taken_rate": " 5 (55.6%)"
   },
   {
@@ -563,12 +563,12 @@
       "1,0": "T",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "T",
-      "2,1": "V",
+      "2,0": "V",
+      "2,1": "T",
       "2,2": "V"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 1,
+    "cleared_seats": 0,
     "reversed_seats": 1,
     "taken_rate": " 5 (55.6%)"
   },
@@ -578,16 +578,16 @@
       "0,0": "T",
       "0,1": "S",
       "0,2": "T",
-      "1,0": "T",
+      "1,0": "S",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "T",
-      "2,1": "V",
+      "2,0": "V",
+      "2,1": "T",
       "2,2": "V"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 1,
-    "reversed_seats": 1,
+    "cleared_seats": 0,
+    "reversed_seats": 2,
     "taken_rate": " 5 (55.6%)"
   },
   {
@@ -595,198 +595,198 @@
     "seats_taken_state": {
       "0,0": "T",
       "0,1": "S",
-      "0,2": "V",
-      "1,0": "V",
+      "0,2": "T",
+      "1,0": "S",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "T",
-      "2,1": "V",
+      "2,0": "V",
+      "2,1": "T",
       "2,2": "V"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 1,
-    "reversed_seats": 1,
-    "taken_rate": " 3 (33.3%)"
+    "cleared_seats": 0,
+    "reversed_seats": 2,
+    "taken_rate": " 5 (55.6%)"
   },
   {
     "time": "15:30",
     "seats_taken_state": {
       "0,0": "T",
-      "0,1": "V",
-      "0,2": "V",
-      "1,0": "V",
+      "0,1": "S",
+      "0,2": "T",
+      "1,0": "S",
       "1,1": "V",
       "1,2": "V",
       "2,0": "T",
-      "2,1": "V",
+      "2,1": "T",
       "2,2": "V"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 2,
-    "reversed_seats": 0,
-    "taken_rate": " 2 (22.2%)"
+    "cleared_seats": 0,
+    "reversed_seats": 2,
+    "taken_rate": " 6 (66.7%)"
   },
   {
     "time": "15:45",
     "seats_taken_state": {
       "0,0": "T",
-      "0,1": "V",
-      "0,2": "V",
-      "1,0": "V",
+      "0,1": "S",
+      "0,2": "T",
+      "1,0": "S",
       "1,1": "V",
       "1,2": "V",
       "2,0": "T",
-      "2,1": "V",
-      "2,2": "V"
+      "2,1": "T",
+      "2,2": "T"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 2,
-    "reversed_seats": 0,
-    "taken_rate": " 2 (22.2%)"
+    "cleared_seats": 0,
+    "reversed_seats": 2,
+    "taken_rate": " 7 (77.8%)"
   },
   {
     "time": "16:00",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "T",
+      "0,1": "S",
       "0,2": "V",
-      "1,0": "T",
-      "1,1": "V",
-      "1,2": "V",
+      "1,0": "S",
+      "1,1": "T",
+      "1,2": "T",
       "2,0": "T",
       "2,1": "V",
-      "2,2": "V"
+      "2,2": "T"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 2,
-    "reversed_seats": 0,
-    "taken_rate": " 3 (33.3%)"
+    "cleared_seats": 0,
+    "reversed_seats": 2,
+    "taken_rate": " 6 (66.7%)"
   },
   {
     "time": "16:15",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "T",
+      "0,1": "V",
       "0,2": "V",
-      "1,0": "T",
-      "1,1": "V",
-      "1,2": "V",
+      "1,0": "S",
+      "1,1": "T",
+      "1,2": "T",
       "2,0": "T",
       "2,1": "V",
-      "2,2": "V"
+      "2,2": "T"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 2,
-    "reversed_seats": 0,
-    "taken_rate": " 3 (33.3%)"
+    "cleared_seats": 1,
+    "reversed_seats": 1,
+    "taken_rate": " 5 (55.6%)"
   },
   {
     "time": "16:30",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "T",
+      "0,1": "V",
       "0,2": "V",
-      "1,0": "T",
-      "1,1": "V",
-      "1,2": "V",
-      "2,0": "V",
+      "1,0": "V",
+      "1,1": "T",
+      "1,2": "T",
+      "2,0": "T",
       "2,1": "V",
-      "2,2": "V"
+      "2,2": "T"
     },
     "unstisfied_num": 0,
     "cleared_seats": 2,
     "reversed_seats": 0,
-    "taken_rate": " 2 (22.2%)"
+    "taken_rate": " 4 (44.4%)"
   },
   {
     "time": "16:45",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "T",
+      "0,1": "V",
       "0,2": "V",
-      "1,0": "T",
-      "1,1": "V",
-      "1,2": "V",
-      "2,0": "V",
+      "1,0": "V",
+      "1,1": "T",
+      "1,2": "T",
+      "2,0": "S",
       "2,1": "V",
-      "2,2": "V"
+      "2,2": "T"
     },
     "unstisfied_num": 0,
     "cleared_seats": 2,
-    "reversed_seats": 0,
-    "taken_rate": " 2 (22.2%)"
+    "reversed_seats": 1,
+    "taken_rate": " 4 (44.4%)"
   },
   {
     "time": "17:00",
     "seats_taken_state": {
-      "0,0": "T",
-      "0,1": "V",
-      "0,2": "T",
-      "1,0": "S",
-      "1,1": "V",
-      "1,2": "V",
-      "2,0": "T",
+      "0,0": "V",
+      "0,1": "T",
+      "0,2": "V",
+      "1,0": "T",
+      "1,1": "T",
+      "1,2": "T",
+      "2,0": "S",
       "2,1": "V",
       "2,2": "V"
     },
     "unstisfied_num": 0,
     "cleared_seats": 2,
     "reversed_seats": 1,
-    "taken_rate": " 4 (44.4%)"
+    "taken_rate": " 5 (55.6%)"
   },
   {
     "time": "17:15",
     "seats_taken_state": {
-      "0,0": "T",
-      "0,1": "V",
-      "0,2": "T",
-      "1,0": "S",
-      "1,1": "V",
-      "1,2": "V",
-      "2,0": "T",
+      "0,0": "V",
+      "0,1": "T",
+      "0,2": "V",
+      "1,0": "T",
+      "1,1": "T",
+      "1,2": "T",
+      "2,0": "S",
       "2,1": "V",
       "2,2": "V"
     },
     "unstisfied_num": 0,
     "cleared_seats": 2,
     "reversed_seats": 1,
-    "taken_rate": " 4 (44.4%)"
+    "taken_rate": " 5 (55.6%)"
   },
   {
     "time": "17:30",
     "seats_taken_state": {
-      "0,0": "T",
-      "0,1": "V",
-      "0,2": "T",
-      "1,0": "S",
-      "1,1": "V",
-      "1,2": "V",
-      "2,0": "T",
+      "0,0": "V",
+      "0,1": "T",
+      "0,2": "V",
+      "1,0": "T",
+      "1,1": "T",
+      "1,2": "T",
+      "2,0": "S",
       "2,1": "V",
       "2,2": "V"
     },
     "unstisfied_num": 0,
     "cleared_seats": 2,
     "reversed_seats": 1,
-    "taken_rate": " 4 (44.4%)"
+    "taken_rate": " 5 (55.6%)"
   },
   {
     "time": "17:45",
     "seats_taken_state": {
-      "0,0": "T",
-      "0,1": "V",
+      "0,0": "V",
+      "0,1": "T",
       "0,2": "T",
-      "1,0": "S",
-      "1,1": "V",
-      "1,2": "V",
-      "2,0": "T",
+      "1,0": "T",
+      "1,1": "T",
+      "1,2": "T",
+      "2,0": "S",
       "2,1": "V",
       "2,2": "V"
     },
     "unstisfied_num": 0,
     "cleared_seats": 2,
     "reversed_seats": 1,
-    "taken_rate": " 4 (44.4%)"
+    "taken_rate": " 6 (66.7%)"
   },
   {
     "time": "18:00",
@@ -797,39 +797,21 @@
       "1,0": "S",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "T",
+      "2,0": "S",
       "2,1": "V",
       "2,2": "V"
     },
     "unstisfied_num": 0,
     "cleared_seats": 2,
-    "reversed_seats": 1,
+    "reversed_seats": 2,
     "taken_rate": " 3 (33.3%)"
   },
   {
     "time": "18:15",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "V",
-      "0,2": "T",
-      "1,0": "S",
-      "1,1": "V",
-      "1,2": "V",
-      "2,0": "T",
-      "2,1": "V",
-      "2,2": "V"
-    },
-    "unstisfied_num": 0,
-    "cleared_seats": 2,
-    "reversed_seats": 1,
-    "taken_rate": " 3 (33.3%)"
-  },
-  {
-    "time": "18:30",
-    "seats_taken_state": {
-      "0,0": "V",
       "0,1": "T",
-      "0,2": "V",
+      "0,2": "T",
       "1,0": "T",
       "1,1": "V",
       "1,2": "V",
@@ -838,9 +820,27 @@
       "2,2": "V"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 3,
+    "cleared_seats": 4,
     "reversed_seats": 0,
-    "taken_rate": " 3 (33.3%)"
+    "taken_rate": " 4 (44.4%)"
+  },
+  {
+    "time": "18:30",
+    "seats_taken_state": {
+      "0,0": "V",
+      "0,1": "T",
+      "0,2": "T",
+      "1,0": "T",
+      "1,1": "V",
+      "1,2": "V",
+      "2,0": "T",
+      "2,1": "V",
+      "2,2": "V"
+    },
+    "unstisfied_num": 0,
+    "cleared_seats": 4,
+    "reversed_seats": 0,
+    "taken_rate": " 4 (44.4%)"
   },
   {
     "time": "18:45",
@@ -852,38 +852,38 @@
       "1,1": "V",
       "1,2": "V",
       "2,0": "T",
-      "2,1": "V",
+      "2,1": "T",
       "2,2": "V"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 3,
+    "cleared_seats": 4,
     "reversed_seats": 0,
-    "taken_rate": " 4 (44.4%)"
+    "taken_rate": " 5 (55.6%)"
   },
   {
     "time": "19:00",
     "seats_taken_state": {
       "0,0": "T",
       "0,1": "T",
-      "0,2": "T",
+      "0,2": "S",
       "1,0": "T",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "V",
+      "2,0": "T",
       "2,1": "T",
       "2,2": "V"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 3,
-    "reversed_seats": 0,
-    "taken_rate": " 5 (55.6%)"
+    "cleared_seats": 4,
+    "reversed_seats": 1,
+    "taken_rate": " 6 (66.7%)"
   },
   {
     "time": "19:15",
     "seats_taken_state": {
       "0,0": "T",
       "0,1": "T",
-      "0,2": "T",
+      "0,2": "S",
       "1,0": "T",
       "1,1": "V",
       "1,2": "V",
@@ -892,8 +892,8 @@
       "2,2": "T"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 3,
-    "reversed_seats": 0,
+    "cleared_seats": 4,
+    "reversed_seats": 1,
     "taken_rate": " 7 (77.8%)"
   },
   {
@@ -901,71 +901,71 @@
     "seats_taken_state": {
       "0,0": "T",
       "0,1": "T",
-      "0,2": "T",
-      "1,0": "T",
-      "1,1": "V",
+      "0,2": "S",
+      "1,0": "S",
+      "1,1": "T",
       "1,2": "V",
       "2,0": "T",
       "2,1": "T",
       "2,2": "T"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 3,
-    "reversed_seats": 0,
-    "taken_rate": " 7 (77.8%)"
+    "cleared_seats": 4,
+    "reversed_seats": 2,
+    "taken_rate": " 8 (88.9%)"
   },
   {
     "time": "19:45",
     "seats_taken_state": {
       "0,0": "T",
-      "0,1": "V",
-      "0,2": "T",
+      "0,1": "T",
+      "0,2": "S",
       "1,0": "V",
-      "1,1": "V",
+      "1,1": "T",
       "1,2": "V",
       "2,0": "T",
       "2,1": "T",
       "2,2": "T"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 3,
-    "reversed_seats": 0,
-    "taken_rate": " 5 (55.6%)"
+    "cleared_seats": 5,
+    "reversed_seats": 1,
+    "taken_rate": " 7 (77.8%)"
   },
   {
     "time": "20:00",
     "seats_taken_state": {
       "0,0": "T",
-      "0,1": "T",
-      "0,2": "T",
+      "0,1": "V",
+      "0,2": "S",
       "1,0": "V",
-      "1,1": "V",
+      "1,1": "T",
       "1,2": "V",
-      "2,0": "T",
+      "2,0": "V",
       "2,1": "T",
       "2,2": "T"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 3,
-    "reversed_seats": 0,
-    "taken_rate": " 6 (66.7%)"
+    "cleared_seats": 5,
+    "reversed_seats": 1,
+    "taken_rate": " 5 (55.6%)"
   },
   {
     "time": "20:15",
     "seats_taken_state": {
       "0,0": "T",
       "0,1": "T",
-      "0,2": "T",
+      "0,2": "S",
       "1,0": "V",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "T",
+      "2,0": "V",
       "2,1": "T",
-      "2,2": "V"
+      "2,2": "T"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 3,
-    "reversed_seats": 0,
+    "cleared_seats": 5,
+    "reversed_seats": 1,
     "taken_rate": " 5 (55.6%)"
   },
   {
@@ -973,70 +973,70 @@
     "seats_taken_state": {
       "0,0": "T",
       "0,1": "T",
-      "0,2": "T",
-      "1,0": "T",
+      "0,2": "V",
+      "1,0": "V",
       "1,1": "V",
       "1,2": "V",
       "2,0": "T",
       "2,1": "T",
-      "2,2": "V"
+      "2,2": "T"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 3,
+    "cleared_seats": 6,
     "reversed_seats": 0,
-    "taken_rate": " 6 (66.7%)"
+    "taken_rate": " 5 (55.6%)"
   },
   {
     "time": "20:45",
     "seats_taken_state": {
       "0,0": "T",
       "0,1": "T",
-      "0,2": "T",
-      "1,0": "T",
+      "0,2": "V",
+      "1,0": "V",
       "1,1": "V",
       "1,2": "V",
       "2,0": "T",
       "2,1": "T",
-      "2,2": "V"
+      "2,2": "T"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 3,
+    "cleared_seats": 6,
     "reversed_seats": 0,
-    "taken_rate": " 6 (66.7%)"
+    "taken_rate": " 5 (55.6%)"
   },
   {
     "time": "21:00",
     "seats_taken_state": {
-      "0,0": "T",
-      "0,1": "V",
+      "0,0": "V",
+      "0,1": "T",
       "0,2": "V",
-      "1,0": "T",
+      "1,0": "V",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "V",
+      "2,0": "T",
       "2,1": "V",
       "2,2": "V"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 3,
+    "cleared_seats": 6,
     "reversed_seats": 0,
     "taken_rate": " 2 (22.2%)"
   },
   {
     "time": "21:15",
     "seats_taken_state": {
-      "0,0": "T",
-      "0,1": "V",
+      "0,0": "V",
+      "0,1": "T",
       "0,2": "V",
-      "1,0": "T",
+      "1,0": "V",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "V",
+      "2,0": "T",
       "2,1": "V",
       "2,2": "V"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 3,
+    "cleared_seats": 6,
     "reversed_seats": 0,
     "taken_rate": " 2 (22.2%)"
   },
@@ -1044,125 +1044,125 @@
     "time": "21:30",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "V",
-      "0,2": "V",
+      "0,1": "T",
+      "0,2": "T",
       "1,0": "T",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "V",
+      "2,0": "T",
       "2,1": "V",
       "2,2": "V"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 3,
+    "cleared_seats": 6,
     "reversed_seats": 0,
-    "taken_rate": " 1 (11.1%)"
+    "taken_rate": " 4 (44.4%)"
   },
   {
     "time": "21:45",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "V",
-      "0,2": "V",
+      "0,1": "T",
+      "0,2": "T",
       "1,0": "T",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "V",
+      "2,0": "T",
       "2,1": "V",
       "2,2": "V"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 3,
+    "cleared_seats": 6,
     "reversed_seats": 0,
-    "taken_rate": " 1 (11.1%)"
+    "taken_rate": " 4 (44.4%)"
   },
   {
     "time": "22:00",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "T",
-      "0,2": "V",
-      "1,0": "V",
+      "0,1": "V",
+      "0,2": "T",
+      "1,0": "T",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "V",
+      "2,0": "T",
       "2,1": "V",
       "2,2": "V"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 3,
+    "cleared_seats": 6,
     "reversed_seats": 0,
-    "taken_rate": " 1 (11.1%)"
+    "taken_rate": " 3 (33.3%)"
   },
   {
     "time": "22:15",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "T",
-      "0,2": "V",
-      "1,0": "V",
+      "0,1": "V",
+      "0,2": "T",
+      "1,0": "T",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "V",
+      "2,0": "T",
       "2,1": "V",
       "2,2": "V"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 3,
+    "cleared_seats": 6,
     "reversed_seats": 0,
-    "taken_rate": " 1 (11.1%)"
+    "taken_rate": " 3 (33.3%)"
   },
   {
     "time": "22:30",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "T",
+      "0,1": "V",
       "0,2": "V",
-      "1,0": "V",
+      "1,0": "T",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "V",
+      "2,0": "T",
       "2,1": "V",
       "2,2": "V"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 3,
+    "cleared_seats": 6,
     "reversed_seats": 0,
-    "taken_rate": " 1 (11.1%)"
+    "taken_rate": " 2 (22.2%)"
   },
   {
     "time": "22:45",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "T",
+      "0,1": "V",
       "0,2": "V",
-      "1,0": "V",
+      "1,0": "T",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "V",
+      "2,0": "T",
       "2,1": "V",
       "2,2": "V"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 3,
+    "cleared_seats": 6,
     "reversed_seats": 0,
-    "taken_rate": " 1 (11.1%)"
+    "taken_rate": " 2 (22.2%)"
   },
   {
     "time": "23:00",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "T",
+      "0,1": "V",
       "0,2": "V",
       "1,0": "V",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "V",
+      "2,0": "T",
       "2,1": "V",
       "2,2": "V"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 3,
+    "cleared_seats": 6,
     "reversed_seats": 0,
     "taken_rate": " 1 (11.1%)"
   },
@@ -1170,17 +1170,17 @@
     "time": "23:15",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "T",
+      "0,1": "V",
       "0,2": "V",
       "1,0": "V",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "V",
+      "2,0": "T",
       "2,1": "V",
       "2,2": "V"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 3,
+    "cleared_seats": 6,
     "reversed_seats": 0,
     "taken_rate": " 1 (11.1%)"
   },
@@ -1188,17 +1188,17 @@
     "time": "23:30",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "T",
+      "0,1": "V",
       "0,2": "V",
       "1,0": "V",
       "1,1": "V",
       "1,2": "V",
-      "2,0": "V",
+      "2,0": "T",
       "2,1": "V",
       "2,2": "V"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 3,
+    "cleared_seats": 6,
     "reversed_seats": 0,
     "taken_rate": " 1 (11.1%)"
   },
@@ -1206,7 +1206,7 @@
     "time": "23:45",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "T",
+      "0,1": "V",
       "0,2": "V",
       "1,0": "V",
       "1,1": "V",
@@ -1216,15 +1216,15 @@
       "2,2": "V"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 3,
+    "cleared_seats": 6,
     "reversed_seats": 0,
-    "taken_rate": " 1 (11.1%)"
+    "taken_rate": " 0 (0.0%)"
   },
   {
     "time": "00:00",
     "seats_taken_state": {
       "0,0": "V",
-      "0,1": "T",
+      "0,1": "V",
       "0,2": "V",
       "1,0": "V",
       "1,1": "V",
@@ -1234,8 +1234,8 @@
       "2,2": "V"
     },
     "unstisfied_num": 0,
-    "cleared_seats": 3,
+    "cleared_seats": 6,
     "reversed_seats": 0,
-    "taken_rate": " 1 (11.1%)"
+    "taken_rate": " 0 (0.0%)"
   }
 ]

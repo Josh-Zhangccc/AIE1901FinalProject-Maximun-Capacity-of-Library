@@ -36,7 +36,7 @@ class Simulation:
         path = simulation_file_path if simulation_type=="simulation"else test_simulation_path
         self.jm = JsonManager(os.path.join(path,f"{name}.json"),stru)
 
-    def run(self):
+    def run(self, run_all = True):
         """
         运行模拟系统
         提供交互式命令行界面，用户可以控制模拟过程
@@ -45,7 +45,12 @@ class Simulation:
         print("输入 'help' 查看可用命令")
         print("当前图书馆座位信息为：")
         self.library.visualize_seats_infomation()
-        
+        if run_all:
+            while f"{self.library.current_time.strftime('%H:%M')}" != "00:00":
+                self.step()
+                self.jm.save_json()
+            return
+            
         while True:
             try:
                 command = input(f"[{self.library.current_time.strftime('%H:%M')}] > ").strip().lower()
