@@ -29,27 +29,37 @@ class Clients:
                         {'role':'system','content':prompt}
                     ],
                     stream=False,
-                    temperature=0.9,
+                    temperature=0.7,  # 降低temperature以获得更一致的输出
                     max_tokens=1000,
-                    top_p=0.95,
-                    frequency_penalty=0.0,
-                    presence_penalty=0.0
+                    top_p=0.8,      # 降低top_p以获得更一致的输出
+                    frequency_penalty=0.2,
+                    presence_penalty=0.2
                 )
                 reply = response.choices[0].message.content
+                
+                if reply is None:
+                    print(f"LLM返回空响应，尝试 {attempt + 1}")
+                    continue
                 
                 # 尝试解析回复
                 parsed_reply = self._transform_to_json(reply)
                 
                 # 如果解析成功且包含必要的字段，返回结果
-                if parsed_reply:
-                    if isinstance(parsed_reply, dict) and parsed_reply.get("action") is not None:
+                if parsed_reply is not None:
+                    if isinstance(parsed_reply, dict) and "action" in parsed_reply:
                         return parsed_reply
-                    elif isinstance(parsed_reply, list) and len(parsed_reply) > 0:
+                    elif isinstance(parsed_reply, list):
                         # 对于日程列表，检查是否包含必要字段
                         if all(isinstance(item, dict) and "time" in item and "action" in item for item in parsed_reply):
                             return parsed_reply
+                        else:
+                            print(f"LLM返回的列表格式不正确: {parsed_reply}")
+                            continue  # 继续尝试
                     # 如果已经是正确的格式，直接返回
                     return parsed_reply
+                else:
+                    print(f"无法解析LLM响应，尝试 {attempt + 1}")
+                    continue
                 
             except Exception as e:
                 print(f"尝试 {attempt + 1} 失败: {e}")
@@ -104,7 +114,7 @@ class Clients:
 
             # 如果以上都失败，使用默认响应
             print(f"JSON 解析失败，LLM响应: {llm_response[:200]}...")  # 只打印前200个字符
-            return {"action": None}
+            return None  # 返回None而不是{"action": None}，让调用者处理
         except Exception as e:
             print(f"处理LLM响应时发生错误: {e}")
-            return {"action": None}
+            return None  # 返回None而不是{"action": None}，让调用者处理

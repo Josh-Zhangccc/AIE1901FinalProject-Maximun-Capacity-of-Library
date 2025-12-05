@@ -92,7 +92,7 @@ AIE1901_FinalExamSimulation/
 
 ### 项目特性
 
-- **时间系统**: 模拟一天(7:00-24:00)，图书馆时间更新步长为15分钟
+- **时间系统**: 模拟一天(7:00-23:59)，图书馆时间更新步长为15分钟，学生时间更新步长也为15分钟
 - **学生行为**: 基于课程表、作息和满意度的智能决策
 - **参数调节**: 用户可调节网格大小、学生数量、专业比例、座位偏好、检查清理时间等参数
 - **数据可视化**: 自动生成整合图像，展示模拟结果的关键指标
@@ -211,7 +211,7 @@ AIE1901_FinalExamSimulation/
 
 ### Project Features
 
-- **Time System**: Simulate a day (7:00-24:00), with 15-minute library time increments
+- **Time System**: Simulate a day (7:00-23:59), with 15-minute library time increments
 - **Student Behavior**: Intelligent decision-making based on timetables, schedules, and satisfaction
 - **Parameter Adjustment**: Users can adjust grid size, number of students, major ratios, seat preferences, check and cleanup times
 - **Data Visualization**: Automatically generate integrated charts showing key simulation indicators

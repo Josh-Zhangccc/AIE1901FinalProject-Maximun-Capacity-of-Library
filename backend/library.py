@@ -2,7 +2,7 @@ from .seats import Seat,Status
 from .students import Student,StudentState
 import random
 from datetime import datetime, timedelta
-random.seed(1)
+from threading import Thread, Lock
 
 #Seat含有的属性：lamp,socket,x,y
 #Students含有的属性：lamp:float,socket:float,space:float///character="守序", schedule_type="正常", focus_type="中", course_situation="中"
@@ -25,7 +25,7 @@ class Library:
         self.limit_reversed_time = timedelta(hours=1)  # 占座时间限制，超过此时间的占座将被清理
         self.unsatisfied = 0  # 不满意计数器，记录因没有座位而无法学习的学生数
         self.count_cleared_seat = 0
-
+        self._lock = Lock()  # 线程锁，保证计数器和列表操作的线程安全
     @staticmethod
     def _random_assign(random_num:int):
         """
@@ -108,6 +108,10 @@ class Library:
             students_number (int): 要创建的学生数量
             type (str): 专业类型（'humanities', 'science', 'engineering'）
         """
+        # 计算图书馆最大容量（座位总数）
+        library_capacity = len(self.seats) if hasattr(self, 'seats') and self.seats else 0
+        total_students = len([s for s in self.students]) + students_number  # 总学生数（已创建的+即将创建的）
+        
         # 记录初始学生数量
         initial_student_count = len(self.students)
         initial_count = self._count
@@ -125,59 +129,59 @@ class Library:
             case 'humanities':  # 文科专业
                 for idx, is_diligent in enumerate(diligent_list):
                     if is_diligent:
-                        new_student = Student.create_humanities_diligent_student(self._count)
+                        new_student = Student.create_humanities_diligent_student(self._count, library_capacity=library_capacity, total_students=total_students)
                         self.students.append(new_student)
                         self._count += 1
                 
                 # 创建中等程度的文科生（0.3<随机数<0.7的）
                 for idx, is_medium in enumerate(medium_list):
                     if is_medium:
-                        new_student = Student.create_humanities_medium_student(self._count)
+                        new_student = Student.create_humanities_medium_student(self._count, library_capacity=library_capacity, total_students=total_students)
                         self.students.append(new_student)
                         self._count += 1
                 
                 # 创建懒惰的文科生（随机数<=0.3的）
                 for idx, is_lazy in enumerate(lazy_list):
                     if is_lazy:
-                        new_student = Student.create_humanities_lazy_student(self._count)
+                        new_student = Student.create_humanities_lazy_student(self._count, library_capacity=library_capacity, total_students=total_students)
                         self.students.append(new_student)
                         self._count += 1
 
             case 'science':  # 理科专业
                 for idx, is_diligent in enumerate(diligent_list):
                     if is_diligent:
-                        new_student = Student.create_science_diligent_student(self._count)
+                        new_student = Student.create_science_diligent_student(self._count, library_capacity=library_capacity, total_students=total_students)
                         self.students.append(new_student)
                         self._count += 1
                 
                 for idx, is_medium in enumerate(medium_list):
                     if is_medium:
-                        new_student = Student.create_science_medium_student(self._count)
+                        new_student = Student.create_science_medium_student(self._count, library_capacity=library_capacity, total_students=total_students)
                         self.students.append(new_student)
                         self._count += 1
                 
                 for idx, is_lazy in enumerate(lazy_list):
                     if is_lazy:
-                        new_student = Student.create_science_lazy_student(self._count)
+                        new_student = Student.create_science_lazy_student(self._count, library_capacity=library_capacity, total_students=total_students)
                         self.students.append(new_student)
                         self._count += 1
 
             case 'engineering':  # 工科专业
                 for idx, is_diligent in enumerate(diligent_list):
                     if is_diligent:
-                        new_student = Student.create_engineering_diligent_student(self._count)
+                        new_student = Student.create_engineering_diligent_student(self._count, library_capacity=library_capacity, total_students=total_students)
                         self.students.append(new_student)
                         self._count += 1
                 
                 for idx, is_medium in enumerate(medium_list):
                     if is_medium:
-                        new_student = Student.create_engineering_medium_student(self._count)
+                        new_student = Student.create_engineering_medium_student(self._count, library_capacity=library_capacity, total_students=total_students)
                         self.students.append(new_student)
                         self._count += 1
                 
                 for idx, is_lazy in enumerate(lazy_list):
                     if is_lazy:
-                        new_student = Student.create_engineering_lazy_student(self._count)
+                        new_student = Student.create_engineering_lazy_student(self._count, library_capacity=library_capacity, total_students=total_students)
                         self.students.append(new_student)
                         self._count += 1
 
@@ -187,13 +191,116 @@ class Library:
             # 根据专业类型创建一个默认中等类型的学生
             match type:
                 case 'humanities':
-                    new_student = Student.create_humanities_medium_student(self._count)
+                    new_student = Student.create_humanities_medium_student(self._count, library_capacity=library_capacity, total_students=total_students)
                 case 'science':
-                    new_student = Student.create_science_medium_student(self._count)
+                    new_student = Student.create_science_medium_student(self._count, library_capacity=library_capacity, total_students=total_students)
                 case 'engineering':
-                    new_student = Student.create_engineering_medium_student(self._count)
+                    new_student = Student.create_engineering_medium_student(self._count, library_capacity=library_capacity, total_students=total_students)
                 case _:
-                    new_student = Student.create_engineering_medium_student(self._count)  # 默认情况
+                    new_student = Student.create_engineering_medium_student(self._count, library_capacity=library_capacity, total_students=total_students)  # 默认情况
+            self.students.append(new_student)
+            self._count += 1
+
+    def _init_students_with_different_major_for_total(self, students_number: int, type: str, total_num: int):
+        """
+        根据专业类型初始化指定数量的学生
+        根据随机数将学生分为勤奋、中等、懒惰三种类型
+
+        Args:
+            students_number (int): 要创建的学生数量
+            type (str): 专业类型（'humanities', 'science', 'engineering'）
+            total_num (int): 总学生数，用于传递给学生对象
+        """
+        # 计算图书馆最大容量（座位总数）
+        library_capacity = len(self.seats) if hasattr(self, 'seats') and self.seats else 0
+        total_students = total_num  # 总学生数（由调用方提供）
+        
+        # 记录初始学生数量
+        initial_student_count = len(self.students)
+        initial_count = self._count
+
+        # 生成随机数列表，用于分配学生类型
+        _list = self._random_assign(students_number)
+        # 根据随机数范围将学生分为三类：勤奋（>=0.7）、中等（0.3-0.7）、懒惰（<=0.3）
+        diligent_list = [i>=0.7 for i in _list]
+        medium_list = [0.3<i<0.7 for i in _list]
+        lazy_list = [i<=0.3 for i in _list]
+
+        # 根据专业类型创建对应专业及能力的学生
+        # 使用全局计数器来确保ID连续，而不是使用过滤后的索引
+        match type:
+            case 'humanities':  # 文科专业
+                for idx, is_diligent in enumerate(diligent_list):
+                    if is_diligent:
+                        new_student = Student.create_humanities_diligent_student(self._count, library_capacity=library_capacity, total_students=total_students)
+                        self.students.append(new_student)
+                        self._count += 1
+                
+                # 创建中等程度的文科生（0.3<随机数<0.7的）
+                for idx, is_medium in enumerate(medium_list):
+                    if is_medium:
+                        new_student = Student.create_humanities_medium_student(self._count, library_capacity=library_capacity, total_students=total_students)
+                        self.students.append(new_student)
+                        self._count += 1
+                
+                # 创建懒惰的文科生（随机数<=0.3的）
+                for idx, is_lazy in enumerate(lazy_list):
+                    if is_lazy:
+                        new_student = Student.create_humanities_lazy_student(self._count, library_capacity=library_capacity, total_students=total_students)
+                        self.students.append(new_student)
+                        self._count += 1
+
+            case 'science':  # 理科专业
+                for idx, is_diligent in enumerate(diligent_list):
+                    if is_diligent:
+                        new_student = Student.create_science_diligent_student(self._count, library_capacity=library_capacity, total_students=total_students)
+                        self.students.append(new_student)
+                        self._count += 1
+                
+                for idx, is_medium in enumerate(medium_list):
+                    if is_medium:
+                        new_student = Student.create_science_medium_student(self._count, library_capacity=library_capacity, total_students=total_students)
+                        self.students.append(new_student)
+                        self._count += 1
+                
+                for idx, is_lazy in enumerate(lazy_list):
+                    if is_lazy:
+                        new_student = Student.create_science_lazy_student(self._count, library_capacity=library_capacity, total_students=total_students)
+                        self.students.append(new_student)
+                        self._count += 1
+
+            case 'engineering':  # 工科专业
+                for idx, is_diligent in enumerate(diligent_list):
+                    if is_diligent:
+                        new_student = Student.create_engineering_diligent_student(self._count, library_capacity=library_capacity, total_students=total_students)
+                        self.students.append(new_student)
+                        self._count += 1
+                
+                for idx, is_medium in enumerate(medium_list):
+                    if is_medium:
+                        new_student = Student.create_engineering_medium_student(self._count, library_capacity=library_capacity, total_students=total_students)
+                        self.students.append(new_student)
+                        self._count += 1
+                
+                for idx, is_lazy in enumerate(lazy_list):
+                    if is_lazy:
+                        new_student = Student.create_engineering_lazy_student(self._count, library_capacity=library_capacity, total_students=total_students)
+                        self.students.append(new_student)
+                        self._count += 1
+
+        # 如果没有创建任何学生（可能由于随机分配导致），创建一个默认类型的学生
+        # 但只在students_number > 0时才这样做
+        if students_number > 0 and len(self.students) == initial_student_count:
+            # 根据专业类型创建一个默认中等类型的学生
+            match type:
+                case 'humanities':
+                    new_student = Student.create_humanities_medium_student(self._count, library_capacity=library_capacity, total_students=total_students)
+                case 'science':
+                    new_student = Student.create_science_medium_student(self._count, library_capacity=library_capacity, total_students=total_students)
+                case 'engineering':
+                    new_student = Student.create_engineering_medium_student(self._count, library_capacity=library_capacity, total_students=total_students)
+                case _:
+                    new_student = Student.create_engineering_medium_student(self._count, library_capacity=library_capacity, total_students=total_students)  # 默认情况
             self.students.append(new_student)
             self._count += 1
 
@@ -208,12 +315,134 @@ class Library:
         """
         self.students.clear()  # 清空现有学生列表
         # 根据比例计算各专业学生数量
-        humanities = int((num * humanities))
-        science = int(num * science)
-        engineering = num - humanities - science  # 工科生数量为剩余数量
-        # 按专业分别初始化学生
-        for population,subject in zip([humanities,science,engineering],["humanities","science","engineering"]):
-            self._init_students_with_different_major(population,subject)
+        humanities_num = int((num * humanities))
+        science_num = int(num * science)
+        engineering_num = num - humanities_num - science_num  # 工科生数量为剩余数量
+        
+        # 使用线程安全的方式创建学生，需要先创建所有学生，然后统一添加到列表
+        def create_major_students_thread(major_type, count, result_container, index_offset):
+            if count <= 0:
+                result_container.extend([])
+                return
+                
+            # 为这个线程范围内的学生创建本地列表
+            local_students = []
+            local_count = index_offset  # 使用偏移量确保ID唯一
+            
+            # 生成随机数列表，用于分配学生类型
+            _list = self._random_assign(count)
+            # 根据随机数范围将学生分为三类：勤奋（>=0.7）、中等（0.3-0.7）、懒惰（<=0.3）
+            diligent_list = [i>=0.7 for i in _list]
+            medium_list = [0.3<i<0.7 for i in _list]
+            lazy_list = [i<=0.3 for i in _list]
+
+            # 根据专业类型创建对应专业及能力的学生
+            match major_type:
+                case 'humanities':  # 文科专业
+                    for idx, is_diligent in enumerate(diligent_list):
+                        if is_diligent:
+                            new_student = Student.create_humanities_diligent_student(local_count, library_capacity=len(self.seats), total_students=num)
+                            local_students.append(new_student)
+                            local_count += 1
+                    
+                    # 创建中等程度的文科生（0.3<随机数<0.7的）
+                    for idx, is_medium in enumerate(medium_list):
+                        if is_medium:
+                            new_student = Student.create_humanities_medium_student(local_count, library_capacity=len(self.seats), total_students=num)
+                            local_students.append(new_student)
+                            local_count += 1
+                    
+                    # 创建懒惰的文科生（随机数<=0.3的）
+                    for idx, is_lazy in enumerate(lazy_list):
+                        if is_lazy:
+                            new_student = Student.create_humanities_lazy_student(local_count, library_capacity=len(self.seats), total_students=num)
+                            local_students.append(new_student)
+                            local_count += 1
+
+                case 'science':  # 理科专业
+                    for idx, is_diligent in enumerate(diligent_list):
+                        if is_diligent:
+                            new_student = Student.create_science_diligent_student(local_count, library_capacity=len(self.seats), total_students=num)
+                            local_students.append(new_student)
+                            local_count += 1
+                    
+                    for idx, is_medium in enumerate(medium_list):
+                        if is_medium:
+                            new_student = Student.create_science_medium_student(local_count, library_capacity=len(self.seats), total_students=num)
+                            local_students.append(new_student)
+                            local_count += 1
+                    
+                    for idx, is_lazy in enumerate(lazy_list):
+                        if is_lazy:
+                            new_student = Student.create_science_lazy_student(local_count, library_capacity=len(self.seats), total_students=num)
+                            local_students.append(new_student)
+                            local_count += 1
+
+                case 'engineering':  # 工科专业
+                    for idx, is_diligent in enumerate(diligent_list):
+                        if is_diligent:
+                            new_student = Student.create_engineering_diligent_student(local_count, library_capacity=len(self.seats), total_students=num)
+                            local_students.append(new_student)
+                            local_count += 1
+                    
+                    for idx, is_medium in enumerate(medium_list):
+                        if is_medium:
+                            new_student = Student.create_engineering_medium_student(local_count, library_capacity=len(self.seats), total_students=num)
+                            local_students.append(new_student)
+                            local_count += 1
+                    
+                    for idx, is_lazy in enumerate(lazy_list):
+                        if is_lazy:
+                            new_student = Student.create_engineering_lazy_student(local_count, library_capacity=len(self.seats), total_students=num)
+                            local_students.append(new_student)
+                            local_count += 1
+
+            # 如果没有创建任何学生（可能由于随机分配导致），创建一个默认类型的学生
+            # 但只在count > 0时才这样做
+            if count > 0 and len(local_students) == 0:
+                # 根据专业类型创建一个默认中等类型的学生
+                match major_type:
+                    case 'humanities':
+                        new_student = Student.create_humanities_medium_student(local_count, library_capacity=len(self.seats), total_students=num)
+                    case 'science':
+                        new_student = Student.create_science_medium_student(local_count, library_capacity=len(self.seats), total_students=num)
+                    case 'engineering':
+                        new_student = Student.create_engineering_medium_student(local_count, library_capacity=len(self.seats), total_students=num)
+                    case _:
+                        new_student = Student.create_engineering_medium_student(local_count, library_capacity=len(self.seats), total_students=num)  # 默认情况
+                local_students.append(new_student)
+
+            # 将结果添加到容器中
+            result_container.extend(local_students)
+
+        # 创建线程列表和结果容器
+        threads = []
+        all_students = []  # 存储所有学生
+        
+        # 为每个专业创建线程
+        thread_args = [
+            ('humanities', humanities_num, all_students, 0),
+            ('science', science_num, all_students, humanities_num),
+            ('engineering', engineering_num, all_students, humanities_num + science_num)
+        ]
+        
+        # 创建并启动线程
+        for major_type, count, container, offset in thread_args:
+            if count > 0:
+                # 创建一个临时容器来存储该线程的结果
+                temp_container = []
+                t = Thread(target=create_major_students_thread, args=(major_type, count, temp_container, offset))
+                threads.append((t, temp_container))
+                t.start()
+        
+        # 等待所有线程完成并收集结果
+        for t, temp_container in threads:
+            t.join()
+            all_students.extend(temp_container)
+        
+        # 将所有学生添加到图书馆的学生列表中
+        self.students.extend(all_students)
+        self._count = len(all_students)
 
     def set_limit_reversed_time(self,time):
         """

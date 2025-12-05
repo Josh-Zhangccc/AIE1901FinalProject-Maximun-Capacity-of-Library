@@ -551,14 +551,16 @@ def update_average_analysis(seats: int):
     run_analysis(seats)
 
 
-def plot_analysis(seat_count: int, output_dir: str = None):
+def plot_analysis(seat_count: int, min_students: int = None, max_students: int = None, output_dir: str = None):
     """
     调用数据分析模块绘制整合分析图
     :param seat_count: 座位数量
+    :param min_students: 最小学生数
+    :param max_students: 最大学生数
     :param output_dir: 输出目录
     """
     from .data_analysis import run_analysis
-    results = run_analysis(seat_count, output_dir)
+    results = run_analysis(seat_count, min_students, max_students, output_dir)
     return results
 
 

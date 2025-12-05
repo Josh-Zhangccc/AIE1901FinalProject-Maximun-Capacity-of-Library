@@ -69,4 +69,4 @@ def main(n):
     print(f"模拟数据已保存到 {file_path}")
     print(f"图像已保存到对应的文件夹中")
 if __name__ == "__main__":
-    main(15)
+    main(11)

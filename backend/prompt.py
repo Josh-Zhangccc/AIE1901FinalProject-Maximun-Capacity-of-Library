@@ -55,10 +55,12 @@ leave_prompt = """你是一个图书馆学生行为模拟器。请根据以下�
 - 图书馆对占座可能最大容忍时间：{limit_time}
 - 到占座时间限制：{time_to_limit}
 - 日程：{schedule}
+- 图书馆最大容量：{library_capacity}
+- 总学生数：{total_students}
 
 日程解析：除"learn"状态外,均不在图书馆
 示例：
-守序,2,12:00:00,2h,剩余 1h 时间限制,[
+守序,2,12:00:00,2h,剩余 1h 时间限制,1.5h,1h,[
 {{"time":"07:00:00","action":"start"}},
 {{"time":"07:30:00","action":"eat"}},
 {{"time":"08:00:00","action":"course"}},

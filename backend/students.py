@@ -27,7 +27,7 @@ class Student:
             1.选择座位
             2.状态改变
     """
-    def __init__(self,student_id,student_para:dict,seat_preference:dict,schedule = None) -> None:
+    def __init__(self,student_id,student_para:dict,seat_preference:dict,schedule = None, library_capacity=None, total_students=None) -> None:
         """
         初始化学生对象
 
@@ -42,10 +42,14 @@ class Student:
                 - lamp: 对台灯的偏好程度（0.0-1.0）
                 - socket: 对插座的偏好程度（0.0-1.0）
                 - space: 对空间充裕的偏好程度（0.0-1.0）
+            library_capacity: 图书馆最大容量
+            total_students: 总学生数
         """
         self.student_id = student_id  # 学生唯一标识符
         self._initialize_student_para(**student_para)  # 初始化学生基本属性
         self._initialize_seat_preference(**seat_preference)  # 初始化座位偏好
+        self.library_capacity = library_capacity  # 图书馆最大容量
+        self.total_students = total_students  # 总学生数
         self.seat = None  # 当前占用的座位对象，无座位时为None
         self.state = StudentState.GONE  # 当前状态，默认为离开状态
         self.client = Clients()  # LLM客户端，用于智能决策
@@ -94,13 +98,31 @@ class Student:
         """
         if schedule:
             self.schedule = schedule
+            return  # 如果提供了日程，则直接返回，不调用LLM
 
         from .prompt import schedule_prompt
-        formatted_prompt = schedule_prompt.format(
-            schedule_type=self.student_para["schedule_type"],
-            focus_type=self.student_para["focus_type"],
-            course_situation=self.student_para["course_situation"]
-        )
+        try:
+            formatted_prompt = schedule_prompt.format(
+                schedule_type=self.student_para["schedule_type"],
+                focus_type=self.student_para["focus_type"],
+                course_situation=self.student_para["course_situation"]
+            )
+        except KeyError as e:
+            print(f"格式化提示词时出错: {e}")
+            print(f"student_para内容: {self.student_para}")
+            # 使用默认日程避免程序崩溃
+            self.schedule = [
+                {"time": "08:00:00", "action": "start"},
+                {"time": "08:00:00", "action": "eat"},
+                {"time": "09:00:00", "action": "learn"},
+                {"time": "12:00:00", "action": "eat"},
+                {"time": "13:00:00", "action": "learn"},
+                {"time": "17:00:00", "action": "eat"},
+                {"time": "18:00:00", "action": "learn"},
+                {"time": "22:00:00", "action": "end"}
+            ]
+            return
+
         response = self.client.response(formatted_prompt, max_retries=3)
         if isinstance(response, list):
             self.schedule = response
@@ -144,7 +166,19 @@ class Student:
             scheduled_items = []
             for item in self.schedule:
                 time_str = item["time"]
-                time_obj = datetime.strptime(time_str, "%H:%M:%S")
+                # 特殊处理 "00:00:00"，将其视为23:59:00（即一天的结束）
+                if time_str == "00:00:00":
+                    time_obj = datetime.strptime("23:59:00", "%H:%M:%S")
+                else:
+                    try:
+                        time_obj = datetime.strptime(time_str, "%H:%M:%S")
+                        # 检查时间是否超出合理范围（23:59:59），如果超出则限制在有效范围内
+                        if time_obj.time() > datetime.strptime("23:59:00", "%H:%M:%S").time():
+                            time_obj = datetime.strptime("23:59:00", "%H:%M:%S")
+                    except ValueError:
+                        # 如果时间格式不正确，使用默认值
+                        time_obj = datetime.strptime("23:59:00", "%H:%M:%S")
+                        
                 scheduled_items.append({
                     "time_obj": time_obj,
                     "action": item["action"]
@@ -217,14 +251,24 @@ class Student:
 
         # 构建更全面的提示，包括时间因素
         from .prompt import leave_prompt
-        formatted_prompt = leave_prompt.format(
-            character=self.student_para["character"],
-            satisfaction=self.satisfaction,
-            time=str(self.current_time.time()),
-            limit_time=str(self.limit_reverse_time),
-            schedule=self.schedule,
-            time_to_limit=time_to_limit
-        )
+        try:
+            formatted_prompt = leave_prompt.format(
+                character=self.student_para["character"],
+                satisfaction=self.satisfaction,
+                time=str(self.current_time.time()),
+                limit_time=str(self.limit_reverse_time),
+                schedule=self.schedule,
+                time_to_limit=time_to_limit,
+                library_capacity=self.library_capacity,
+                total_students=self.total_students
+            )
+        except KeyError as e:
+            print(f"格式化占座提示词时出错: {e}")
+            print(f"student_para内容: {self.student_para}")
+            print(f"schedule内容: {self.schedule}")
+            # 使用默认逻辑避免程序崩溃
+            return self._default_reverse_logic()
+            
         response = self.client.response(formatted_prompt, max_retries=3)
 
         if isinstance(response, dict) and "action" in response:
@@ -443,7 +487,7 @@ class Student:
 
     # 以下为工厂方法，用于创建不同类型的学生
     @classmethod
-    def create_humanities_diligent_student(cls, student_id):
+    def create_humanities_diligent_student(cls, student_id, library_capacity=None, total_students=None):
         """创建勤奋的文科生"""
         student_para = {
             "character": "守序",  # 性格守序，遵守规则
@@ -456,10 +500,10 @@ class Student:
             "socket": 0.4,    # 对插座需求一般
             "space": 0.6      # 需要安静宽松的环境
         }
-        return cls(student_id, student_para, seat_preference)
+        return cls(student_id, student_para, seat_preference, library_capacity=library_capacity, total_students=total_students)
     
     @classmethod
-    def create_humanities_medium_student(cls, student_id):
+    def create_humanities_medium_student(cls, student_id, library_capacity=None, total_students=None):
         """创建中等程度的文科生"""
         student_para = {
             "character": "守序",  # 性格守序
@@ -472,10 +516,10 @@ class Student:
             "socket": 0.5,  # 中等对插座需求
             "space": 0.5   # 中等对空间需求
         }
-        return cls(student_id, student_para, seat_preference)
+        return cls(student_id, student_para, seat_preference, library_capacity=library_capacity, total_students=total_students)
     
     @classmethod
-    def create_humanities_lazy_student(cls, student_id):
+    def create_humanities_lazy_student(cls, student_id, library_capacity=None, total_students=None):
         """创建懒惰的文科生"""
         student_para = {
             "character": "利己",  # 性格利己
@@ -488,10 +532,10 @@ class Student:
             "socket": 0.6,    # 可能需要给设备充电
             "space": 0.4      # 对环境要求不高
         }
-        return cls(student_id, student_para, seat_preference)
+        return cls(student_id, student_para, seat_preference, library_capacity=library_capacity, total_students=total_students)
     
     @classmethod
-    def create_science_diligent_student(cls, student_id):
+    def create_science_diligent_student(cls, student_id, library_capacity=None, total_students=None):
         """创建勤奋的理科生"""
         student_para = {
             "character": "守序",  # 性格守序
@@ -504,10 +548,10 @@ class Student:
             "socket": 0.7,    # 需要给计算器或笔记本供电
             "space": 0.5      # 需要足够的桌面空间
         }
-        return cls(student_id, student_para, seat_preference)
+        return cls(student_id, student_para, seat_preference, library_capacity=library_capacity, total_students=total_students)
     
     @classmethod
-    def create_science_medium_student(cls, student_id):
+    def create_science_medium_student(cls, student_id, library_capacity=None, total_students=None):
         """创建中等程度的理科生"""
         student_para = {
             "character": "守序",  # 性格守序
@@ -520,10 +564,10 @@ class Student:
             "socket": 0.6,  # 中等对插座需求
             "space": 0.5   # 中等对空间需求
         }
-        return cls(student_id, student_para, seat_preference)
+        return cls(student_id, student_para, seat_preference, library_capacity=library_capacity, total_students=total_students)
     
     @classmethod
-    def create_science_lazy_student(cls, student_id):
+    def create_science_lazy_student(cls, student_id, library_capacity=None, total_students=None):
         """创建懒惰的理科生"""
         student_para = {
             "character": "利己",  # 性格利己
@@ -536,10 +580,10 @@ class Student:
             "socket": 0.7,    # 可能需要设备充电
             "space": 0.3      # 对空间要求不高
         }
-        return cls(student_id, student_para, seat_preference)
+        return cls(student_id, student_para, seat_preference, library_capacity=library_capacity, total_students=total_students)
     
     @classmethod
-    def create_engineering_diligent_student(cls, student_id):
+    def create_engineering_diligent_student(cls, student_id, library_capacity=None, total_students=None):
         """创建勤奋的工科生"""
         student_para = {
             "character": "守序",  # 性格守序
@@ -552,10 +596,10 @@ class Student:
             "socket": 0.9,    # 需要给电脑、设备供电
             "space": 0.7      # 需要大量桌面空间进行设计和计算
         }
-        return cls(student_id, student_para, seat_preference)
+        return cls(student_id, student_para, seat_preference, library_capacity=library_capacity, total_students=total_students)
     
     @classmethod
-    def create_engineering_medium_student(cls, student_id):
+    def create_engineering_medium_student(cls, student_id, library_capacity=None, total_students=None):
         """创建中等程度的工科生"""
         student_para = {
             "character": "守序",  # 性格守序
@@ -568,10 +612,10 @@ class Student:
             "socket": 0.7,  # 较高对插座需求
             "space": 0.6   # 较高对空间需求
         }
-        return cls(student_id, student_para, seat_preference)
+        return cls(student_id, student_para, seat_preference, library_capacity=library_capacity, total_students=total_students)
     
     @classmethod
-    def create_engineering_lazy_student(cls, student_id):
+    def create_engineering_lazy_student(cls, student_id, library_capacity=None, total_students=None):
         """创建懒惰的工科生"""
         student_para = {
             "character": "利己",  # 性格利己
@@ -584,4 +628,4 @@ class Student:
             "socket": 0.8,    # 仍需给设备充电
             "space": 0.4      # 对空间要求不高
         }
-        return cls(student_id, student_para, seat_preference)
+        return cls(student_id, student_para, seat_preference, library_capacity=library_capacity, total_students=total_students)
