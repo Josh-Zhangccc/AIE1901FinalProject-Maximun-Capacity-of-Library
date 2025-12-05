@@ -16,35 +16,95 @@ class Clients:
     def __init__(self) -> None:
             
         self.client = OpenAI(
-            base_url=BASE_URL,
-            api_key=API_KEY,
+            base_url=BASE_URL["shubiaobiao"],
+            api_key=API_KEY["shubiaobiao"],
         )
 
-    def response(self,prompt:str):
-        response = self.client.chat.completions.create(
-            model=MODEL,
-            messages=[
-                {'role':'system','content':prompt}
-            ],
-            stream=False,
-            temperature=0.9,
-            max_tokens=1000,
-            top_p=0.95,
-            frequency_penalty=0.0,
-            presence_penalty=0.0
-        )
-        reply = response.choices[0].message.content
-        return self._transform_to_json(reply)
+    def response(self,prompt:str, max_retries=3):
+        for attempt in range(max_retries):
+            try:
+                response = self.client.chat.completions.create(
+                    model=MODEL,
+                    messages=[
+                        {'role':'system','content':prompt}
+                    ],
+                    stream=False,
+                    temperature=0.9,
+                    max_tokens=1000,
+                    top_p=0.95,
+                    frequency_penalty=0.0,
+                    presence_penalty=0.0
+                )
+                reply = response.choices[0].message.content
+                
+                # 尝试解析回复
+                parsed_reply = self._transform_to_json(reply)
+                
+                # 如果解析成功且包含必要的字段，返回结果
+                if parsed_reply:
+                    if isinstance(parsed_reply, dict) and parsed_reply.get("action") is not None:
+                        return parsed_reply
+                    elif isinstance(parsed_reply, list) and len(parsed_reply) > 0:
+                        # 对于日程列表，检查是否包含必要字段
+                        if all(isinstance(item, dict) and "time" in item and "action" in item for item in parsed_reply):
+                            return parsed_reply
+                    # 如果已经是正确的格式，直接返回
+                    return parsed_reply
+                
+            except Exception as e:
+                print(f"尝试 {attempt + 1} 失败: {e}")
+                if attempt == max_retries - 1:  # 如果是最后一次尝试
+                    print(f"LLM请求失败，经过 {max_retries} 次尝试")
+                    # 返回一个空的结构来避免程序崩溃
+                    if "日程" in prompt or "schedule" in prompt.lower():
+                        return []
+                    else:
+                        return {"action": None}
+                continue  # 继续下一次尝试
+
+        return {"action": None}
     
 #    def _test(self):
 #        print(self.response(test_prompt))
 
     def _transform_to_json(self,llm_response):
-        try:
-            llm_response = json.loads(llm_response)  # 转换为字典
-        except json.JSONDecodeError as e:
-            # 处理解析失败的情况（如 LLM 输出格式错误）
-            print(f"JSON 解析失败: {e}")
-            llm_response = {"action": None}
-        finally:
+        # 如果响应不是字符串，直接返回
+        if not isinstance(llm_response, str):
             return llm_response
+
+        # 尝试直接解析JSON
+        try:
+            return json.loads(llm_response)
+        except json.JSONDecodeError:
+            pass
+
+        # 如果直接解析失败，尝试从响应中提取JSON部分
+        try:
+            # 查找可能的JSON内容（在代码块中或直接是JSON）
+            import re
+            # 尝试匹配 ```json ... ``` 或 ``` ... ``` 代码块
+            json_match = re.search(r'```(?:json)?\s*([\s\S]*?)\s*```', llm_response)
+            if json_match:
+                json_content = json_match.group(1).strip()
+                try:
+                    return json.loads(json_content)
+                except json.JSONDecodeError:
+                    pass
+
+            # 尝试匹配花括号内的内容
+            # 简单提取大括号内容
+            start_idx = llm_response.find('{')
+            end_idx = llm_response.rfind('}')
+            if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+                json_content = llm_response[start_idx:end_idx+1]
+                try:
+                    return json.loads(json_content)
+                except json.JSONDecodeError:
+                    pass
+
+            # 如果以上都失败，使用默认响应
+            print(f"JSON 解析失败，LLM响应: {llm_response[:200]}...")  # 只打印前200个字符
+            return {"action": None}
+        except Exception as e:
+            print(f"处理LLM响应时发生错误: {e}")
+            return {"action": None}

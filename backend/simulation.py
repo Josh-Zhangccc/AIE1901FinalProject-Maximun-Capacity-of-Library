@@ -6,14 +6,14 @@ simulation.py
 from .library import Library
 from datetime import datetime, timedelta
 from .json_manager import JsonManager
-from config import simulation_file_path,test_simulation_path
+from config import simulations_base_path, test_simulation_path
 import os
 class Simulation:
     """
     模拟主类，协调图书馆、学生和座位系统
     提供交互式命令行界面，支持 step, status, seats, time, quit, help 命令
     """
-    def __init__(self,name:str,row=20, column=20, num_students=200, humanities_rate=0.3, science_rate=0.3,simulation_type="simulation"):
+    def __init__(self,row=20, column=20, num_students=200, humanities_rate=0.3, science_rate=0.3, simulation_number=1):
         """
         初始化模拟系统
 
@@ -23,6 +23,7 @@ class Simulation:
             num_students (int): 学生数量，默认200
             humanities_rate (float): 文科生比例，默认0.3
             science_rate (float): 理科生比例，默认0.3
+            simulation_number (int): 模拟次数，默认为1
         """
         self.library = Library()
         # 使用新的初始化方法，支持自定义座位数量
@@ -31,10 +32,13 @@ class Simulation:
         
         # 设置默认的占座时间限制为1小时
         self.library.set_limit_reversed_time(timedelta(hours=1))
+        total_seats = row * column
         scale = str(row)+"*"+str(column)+f"->{num_students}"
-        stru:list[dict] = [{"test_name":name,"test_scale":scale,"seat_info":self.library.output_seats_info()}]
-        path = simulation_file_path if simulation_type=="simulation"else test_simulation_path
-        self.jm = JsonManager(os.path.join(path,f"{name}.json"),stru)
+        stru:list[dict] = [{"test_name":f"{num_students}-{simulation_number}","test_scale":scale,"seat_info":self.library.output_seats_info()}]
+        # 根据座椅数量创建分类路径
+        seat_folder_name = f"{total_seats}_seats_simulations"
+        path = os.path.join(simulations_base_path, seat_folder_name)
+        self.jm = JsonManager(os.path.join(path,f"{num_students}-{simulation_number}.json"),stru)
 
     def run(self, run_all = True):
         """

@@ -101,7 +101,7 @@ class Student:
             focus_type=self.student_para["focus_type"],
             course_situation=self.student_para["course_situation"]
         )
-        response = self.client.response(formatted_prompt)
+        response = self.client.response(formatted_prompt, max_retries=3)
         if isinstance(response, list):
             self.schedule = response
         else:
@@ -116,6 +116,7 @@ class Student:
                 {"time": "18:00:00", "action": "learn"},
                 {"time": "22:00:00", "action": "end"}
             ]
+            print("LLM回答格式错误！")
 
     def know_library_limit_reverse_time(self,limit_reverse_time:timedelta):
         """
@@ -224,7 +225,7 @@ class Student:
             schedule=self.schedule,
             time_to_limit=time_to_limit
         )
-        response = self.client.response(formatted_prompt)
+        response = self.client.response(formatted_prompt, max_retries=3)
 
         if isinstance(response, dict) and "action" in response:
             action = response["action"]
