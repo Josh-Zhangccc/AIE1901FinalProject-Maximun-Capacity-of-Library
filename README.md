@@ -129,10 +129,10 @@ conda activate seat-simulation
       pip install -r requirements.txt
       ```
 
-   2. Enter the frontend directory and start the application:
+   2. Enter the main directory and start the application:
       ```bash
-      cd frontend
-      python app.py
+      
+      python .\frontend\app.py
       ```
 
    3. Access http://localhost:5000 to view the application
@@ -388,10 +388,10 @@ conda activate seat-simulation
       pip install -r requirements.txt
       ```
 
-   2. 进入frontend目录并启动应用：
+   2. 进入主文件夹并启动应用：
       ```bash
-      cd frontend
-      python app.py
+      
+      python .\frontend\app.py
       ```
 
    3. 访问 http://localhost:5000 查看应用
