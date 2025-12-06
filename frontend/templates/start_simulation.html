@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start Simulation - Library Seat Simulation System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 d-md-block sidebar">
+                <div class="sidebar-sticky">
+                    <h5 class="sidebar-title">Library Simulation</h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('index') }}">
+                                <span data-feather="home"></span>
+                                Home
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{{ url_for('start_simulation') }}">
+                                <span data-feather="play"></span>
+                                Start Simulation
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('repeat_simulation') }}">
+                                <span data-feather="repeat"></span>
+                                Repeat Simulation
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('view_plots') }}">
+                                <span data-feather="bar-chart-2"></span>
+                                View Plots
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('simulation_records') }}">
+                                <span data-feather="file-text"></span>
+                                Simulation Records
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-10 ml-sm-auto px-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Start Simulation</h1>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <!-- Single Simulation Card -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5>Single Simulation Parameters</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="gridSize" class="form-label">Grid Size (Rows x Columns)</label>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <input type="number" class="form-control" id="rows" value="3" min="1" max="10">
+                                                </div>
+                                                <div class="col-6">
+                                                    <input type="number" class="form-control" id="cols" value="3" min="1" max="10">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="totalStudents" class="form-label">Total Students</label>
+                                            <input type="number" class="form-control" id="totalStudents" value="9" min="1">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="humanitiesRatio" class="form-label">Humanities Students Ratio</label>
+                                            <input type="range" class="form-range" id="humanitiesRatio" min="0" max="100" value="33">
+                                            <div class="d-flex justify-content-between">
+                                                <span>0%</span>
+                                                <span id="humanitiesValue">33%</span>
+                                                <span>100%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="scienceRatio" class="form-label">Science Students Ratio</label>
+                                            <input type="range" class="form-range" id="scienceRatio" min="0" max="100" value="33">
+                                            <div class="d-flex justify-content-between">
+                                                <span>0%</span>
+                                                <span id="scienceValue">33%</span>
+                                                <span>100%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="engineeringRatio" class="form-label">Engineering Students Ratio</label>
+                                            <input type="range" class="form-range" id="engineeringRatio" min="0" max="100" value="34">
+                                            <div class="d-flex justify-content-between">
+                                                <span>0%</span>
+                                                <span id="engineeringValue">34%</span>
+                                                <span>100%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="cleaningTime" class="form-label">Cleaning Time (minutes)</label>
+                                            <input type="number" class="form-control" id="cleaningTime" value="60" min="15" step="15">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="useMultiprocessing">
+                                    <label class="form-check-label" for="useMultiprocessing">
+                                        Use Multiprocessing for Faster Simulation
+                                    </label>
+                                </div>
+                                
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-primary" id="startSingleBtn">Start Simulation</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Range Simulation Card -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Range Simulation Parameters</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="rangeRows" class="form-label">Grid Size (Rows x Columns)</label>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <input type="number" class="form-control" id="rangeRows" value="3" min="1" max="10">
+                                                </div>
+                                                <div class="col-6">
+                                                    <input type="number" class="form-control" id="rangeCols" value="3" min="1" max="10">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="cleaningTimeRange" class="form-label">Cleaning Time (minutes)</label>
+                                            <input type="number" class="form-control" id="cleaningTimeRange" value="60" min="15" step="15">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="minStudents" class="form-label">Min Students</label>
+                                            <input type="number" class="form-control" id="minStudents" value="5" min="1">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="maxStudents" class="form-label">Max Students</label>
+                                            <input type="number" class="form-control" id="maxStudents" value="15" min="1">
+                                            <div class="form-text">Max students must be greater than or equal to min students</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="studentStep" class="form-label">Student Step</label>
+                                            <input type="number" class="form-control" id="studentStep" value="2" min="1">
+                                            <div class="form-text">Number to increment between min and max students</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="repeatCount" class="form-label">Repeat Count</label>
+                                            <input type="number" class="form-control" id="repeatCount" value="1" min="1">
+                                            <div class="form-text">Number of times to repeat each simulation</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="humanitiesRatioRange" class="form-label">Humanities Students Ratio</label>
+                                            <input type="range" class="form-range" id="humanitiesRatioRange" min="0" max="100" value="33">
+                                            <div class="d-flex justify-content-between">
+                                                <span>0%</span>
+                                                <span id="humanitiesValueRange">33%</span>
+                                                <span>100%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="scienceRatioRange" class="form-label">Science Students Ratio</label>
+                                            <input type="range" class="form-range" id="scienceRatioRange" min="0" max="100" value="33">
+                                            <div class="d-flex justify-content-between">
+                                                <span>0%</span>
+                                                <span id="scienceValueRange">33%</span>
+                                                <span>100%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="engineeringRatioRange" class="form-label">Engineering Students Ratio</label>
+                                            <input type="range" class="form-range" id="engineeringRatioRange" min="0" max="100" value="34">
+                                            <div class="d-flex justify-content-between">
+                                                <span>0%</span>
+                                                <span id="engineeringValueRange">34%</span>
+                                                <span>100%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="useMultiprocessingRange">
+                                    <label class="form-check-label" for="useMultiprocessingRange">
+                                        Use Multiprocessing for Faster Simulation
+                                    </label>
+                                </div>
+                                
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-success" id="startRangeBtn">Start Range Simulation</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Simulation Progress</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="progress mb-3">
+                                    <div class="progress-bar" role="progressbar" style="width: 0%;" id="progressBar">0%</div>
+                                </div>
+                                <div id="progressInfo">
+                                    <p>Ready to start simulation</p>
+                                </div>
+                                
+                                <div id="rangeSimulationInfo" class="mt-3" style="display: none;">
+                                    <h6>Range Simulation Info:</h6>
+                                    <ul id="rangeProgressList" class="list-unstyled"></ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h5>Current Status</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Current Time:</strong> <span id="currentTime">7:00</span></p>
+                                <p><strong>Occupied Seats:</strong> <span id="occupiedSeats">0</span></p>
+                                <p><strong>Reserved Seats:</strong> <span id="reservedSeats">0</span></p>
+                                <p><strong>Students Active:</strong> <span id="activeStudents">0</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="{{ url_for('static', filename='js/start_simulation.js') }}"></script>
+</body>
+</html>

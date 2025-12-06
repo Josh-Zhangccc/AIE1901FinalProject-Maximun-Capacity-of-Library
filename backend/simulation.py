@@ -29,6 +29,8 @@ class Simulation:
         # 使用新的初始化方法，支持自定义座位数量
         self.library.initialize_seats(row, column)
         self.library.initialize_students(num_students, humanities_rate, science_rate)
+        # 保存simulation_number作为实例属性，以便在前端中使用
+        self.simulation_number = simulation_number
         
         # 设置默认的占座时间限制为1小时
         self.library.set_limit_reversed_time(timedelta(hours=1))
@@ -171,3 +173,26 @@ class Simulation:
         print("  set_limit HH:MM - 设置占座时间限制")
         print("  quit/exit - 退出模拟并保存")
         print("  help     - 显示此帮助信息")
+
+    def save_to_json(self, file_path=None):
+        """
+        保存模拟数据到JSON文件
+        
+        Args:
+            file_path (str): 保存文件的路径，如果为None则使用默认路径
+        """
+        if file_path is None:
+            # 生成默认文件路径
+            total_seats = len(self.library.seats)
+            seat_folder_name = f"{total_seats}_seats_simulations"
+            path = os.path.join(simulations_base_path, seat_folder_name)
+            os.makedirs(path, exist_ok=True)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            file_path = os.path.join(path, f"{len(self.library.students)}_students_{timestamp}.json")
+        else:
+            # 确保目录存在
+            directory = os.path.dirname(file_path)
+            os.makedirs(directory, exist_ok=True)
+        
+        # 保存JsonManager的数据到指定文件
+        self.jm.save_json(file_path=file_path)

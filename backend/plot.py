@@ -1,4 +1,6 @@
 import json
+import matplotlib
+matplotlib.use('Agg')  # Use non-GUI backend
 import matplotlib.pyplot as plt
 import pandas as pd
 import re
@@ -6,9 +8,9 @@ from datetime import datetime
 import matplotlib.dates as mdates
 import os
 
-# 设置中文字体支持
-plt.rcParams['font.sans-serif'] = ['SimHei', 'DejaVu Sans']  # 用来正常显示中文标签
-plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+# Configure font settings for proper character display on Windows
+plt.rcParams['font.sans-serif'] = ['Arial', 'DejaVu Sans', 'Liberation Sans']  # Use fonts that support English characters properly
+plt.rcParams['axes.unicode_minus'] = False  # Used to properly display minus signs
 
 def parse_json_data(json_file_path):
     """
@@ -17,7 +19,7 @@ def parse_json_data(json_file_path):
     with open(json_file_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
     
-    # 提取时间序列数据（跳过第一个测试配置信息）
+    # 提取Time序列数据（跳过第一个测试配置信息）
     time_data = []
     taken_rate_nums = []
     taken_rate_percentages = []
@@ -50,7 +52,7 @@ def parse_json_data(json_file_path):
             # 提取占座数
             reversed_seats.append(item.get('reversed_seats', 0))
             
-            # 提取不满意数和清理座位数
+            # 提取Unsatisfied Count和Cleared Seats Count
             unsatisfied_nums.append(item.get('unstisfied_num', 0))
             cleared_seats.append(item.get('cleared_seats', 0))
             
@@ -78,9 +80,9 @@ def parse_json_data(json_file_path):
 def plot_simulation(json_file_path):
     """
     绘制模拟数据的三张图表
-    1. 座位占有率和占座率
-    2. 不满意数及其增长数和清理座位数及其增长数
-    3. 图书馆中座位的拥挤程度（还是用library的评分）然后平均归一化与座位占有率
+    1. Seat Occupancy Rate和占座率
+    2. Unsatisfied Count及其增长数和Cleared Seats Count及其增长数
+    3. 图书馆中座位的拥挤程度（还是用library的评分）然后平均归一化与Seat Occupancy Rate
     """
     # 解析数据
     data = parse_json_data(json_file_path)
@@ -90,8 +92,8 @@ def plot_simulation(json_file_path):
         full_data = json.load(f)
     
     initial_config = full_data[0]  # 获取初始配置信息
-    test_name = initial_config.get('test_name', '未知测试')
-    test_scale = initial_config.get('test_scale', '未知规模')
+    test_name = initial_config.get('test_name', 'Unknown Test')
+    test_scale = initial_config.get('test_scale', '未知Scale')
     
     # 获取座位数（从seat_info中计算）
     seat_info = initial_config.get('seat_info', {})
@@ -106,14 +108,14 @@ def plot_simulation(json_file_path):
         except:
             student_count = 0
     
-    # 将时间字符串转换为datetime对象以便绘图
+    # 将Time字符串转换为datetime对象以便绘图
     time_objects = [datetime.strptime(t, '%H:%M') for t in data['time_data']]
     
     # 设置x轴范围为7a.m到12p.m (7:00到12:00)
     start_time = datetime.strptime('07:00', '%H:%M')
     end_time = datetime.strptime('23:59', '%H:%M')
     
-    # 过滤时间范围内的数据点，只保留7:00到12:00之间的数据
+    # 过滤Time范围内的数据点，只保留7:00到12:00之间的数据
     filtered_data = {
         'time_objects': [],
         'taken_rate_percentages': [],
@@ -133,27 +135,27 @@ def plot_simulation(json_file_path):
     # 创建图形
     fig, axes = plt.subplots(2, 1, figsize=(16, 10))
     
-    # 设置总标题，包含测试名称、规模和座位/学生数量信息
+    # 设置总标题，包含测试名称、Scale和座位/学生数量信息
     if student_count > 0:
-        suptitle_text = f' 规模: {test_scale}\n座位总数: {seat_count}, 学生总数: {student_count}'
+        suptitle_text = f' Scale: {test_scale}\nTotal Seats: {seat_count}, Total Students: {student_count}'
     else:
-        suptitle_text = f'规模: {test_scale}\n座位总数: {seat_count}'
+        suptitle_text = f'Scale: {test_scale}\nTotal Seats: {seat_count}'
     
     fig.suptitle(suptitle_text, fontsize=16, y=0.98)
     
-    # 第一张图：座位占有率和占座率
+    # 第一张图：Seat Occupancy Rate和占座率
     ax1 = axes[0]
-    ax1_twin = ax1.twinx()  # 创建第二个y轴用于显示占座数量
+    ax1_twin = ax1.twinx()  # 创建第二个y轴用于显示Seat Reservation Count
     
-    # 绘制座位占有率百分比（使用过滤后的数据）
-    line1 = ax1.plot(filtered_data['time_objects'], filtered_data['taken_rate_percentages'], label='座位占有率', marker='o', color='#4A90A4', linewidth=2)  # 冷蓝色系
-    # 绘制占座数量（使用过滤后的数据）
-    line2 = ax1_twin.plot(filtered_data['time_objects'], filtered_data['reversed_seats'], label='占座数量', marker='s', color='#967E7B', linewidth=2)  # 灰褐色系
+    # 绘制Seat Occupancy Rate百分比（使用过滤后的数据）
+    line1 = ax1.plot(filtered_data['time_objects'], filtered_data['taken_rate_percentages'], label='Seat Occupancy Rate', marker='o', color='#4A90A4', linewidth=2)  # Cold Blue Series
+    # 绘制Seat Reservation Count（使用过滤后的数据）
+    line2 = ax1_twin.plot(filtered_data['time_objects'], filtered_data['reversed_seats'], label='Seat Reservation Count', marker='s', color='#967E7B', linewidth=2)  # Gray Brown Series
     
-    ax1.set_title('图1: 座位占有率和占座数量随时间变化', fontsize=14, pad=20)
-    ax1.set_xlabel('时间', fontsize=12)
-    ax1.set_ylabel('座位占有率 (%)', color='#4A90A4', fontsize=12)
-    ax1_twin.set_ylabel('占座数量', color='#967E7B', fontsize=12)
+    ax1.set_title('图1: Seat Occupancy Rate和Seat Reservation Count随Time变化', fontsize=14, pad=20)
+    ax1.set_xlabel('Time', fontsize=12)
+    ax1.set_ylabel('Seat Occupancy Rate (%)', color='#4A90A4', fontsize=12)
+    ax1_twin.set_ylabel('Seat Reservation Count', color='#967E7B', fontsize=12)
     
     # 合并图例
     lines1, labels1 = ax1.get_legend_handles_labels()
@@ -167,21 +169,21 @@ def plot_simulation(json_file_path):
     
     # 设置x轴格式
     ax1.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
-    ax1.xaxis.set_major_locator(mdates.HourLocator(interval=1))  # 每小时一个刻度
+    ax1.xaxis.set_major_locator(mdates.HourLocator(interval=1))  # One tick per hour
     plt.setp(ax1.get_xticklabels(), rotation=45, ha="right")
     
-    # 第二张图：不满意数及其增长数和清理座位数及其增长数
+    # 第二张图：Unsatisfied Count及其增长数和Cleared Seats Count及其增长数
     ax2 = axes[1]
     
-    # 绘制不满意数和清理座位数（左y轴）（使用过滤后的数据）
-    line3 = ax2.plot(filtered_data['time_objects'], filtered_data['unsatisfied_nums'], label='不满意数', marker='o', color='#7F9D9F', linewidth=2)  # 灰绿色系
-    line4 = ax2.plot(filtered_data['time_objects'], filtered_data['cleared_seats'], label='清理座位数', marker='s', color='#6C6C6C', linewidth=2)  # 灰色系
+    # 绘制Unsatisfied Count和Cleared Seats Count（左y轴）（使用过滤后的数据）
+    line3 = ax2.plot(filtered_data['time_objects'], filtered_data['unsatisfied_nums'], label='Unsatisfied Count', marker='o', color='#7F9D9F', linewidth=2)  # Gray Green Series
+    line4 = ax2.plot(filtered_data['time_objects'], filtered_data['cleared_seats'], label='Cleared Seats Count', marker='s', color='#6C6C6C', linewidth=2)  # Gray Series
     
     # 创建第二个y轴用于显示增长数
     
-    ax2.set_title('图2: 不满意数及清理座位数随时间变化', fontsize=14, pad=20)
-    ax2.set_xlabel('时间', fontsize=12)
-    ax2.set_ylabel('累积数量', color='black', fontsize=12)
+    ax2.set_title('图2: Unsatisfied Count及Cleared Seats Count随Time变化', fontsize=14, pad=20)
+    ax2.set_xlabel('Time', fontsize=12)
+    ax2.set_ylabel('Cumulative Count', color='black', fontsize=12)
     
     # 合并图例
     lines3, labels3 = ax2.get_legend_handles_labels()
@@ -195,7 +197,7 @@ def plot_simulation(json_file_path):
     
     # 设置x轴格式
     ax2.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
-    ax2.xaxis.set_major_locator(mdates.HourLocator(interval=1))  # 每小时一个刻度
+    ax2.xaxis.set_major_locator(mdates.HourLocator(interval=1))  # One tick per hour
     plt.setp(ax2.get_xticklabels(), rotation=45, ha="right")
     
     # 调整子图间距，避免标题重叠
@@ -221,15 +223,19 @@ def save_figure(seats: int, students: int, simulation_number: int = 1, show_plot
     # 构建JSON文件路径
     seat_folder_name = f"{seats}_seats_simulations"
     path = os.path.join(simulations_base_path, seat_folder_name)
-    target_json_file = os.path.join(path, f"{students}-{simulation_number}.json")
     
-    if not os.path.exists(target_json_file):
-        print(f"错误：找不到JSON文件 {target_json_file}")
+    # 检查路径是否存在
+    if not os.path.exists(path):
+        print(f"错误：找不到座位数为 {seats} 的模拟数据文件夹 {path}")
         return False
 
     # 查找所有相同学生数的模拟文件
     all_json_files = glob.glob(os.path.join(path, f"{students}-*.json"))
     
+    if not all_json_files:
+        print(f"错误：在路径 {path} 中找不到学生数为 {students} 的JSON文件")
+        return False
+
     # 按模拟次数排序
     def extract_simulation_number(file_path):
         match = re.search(rf"{students}-(\d+)\.json", os.path.basename(file_path))
@@ -261,6 +267,8 @@ def save_figure(seats: int, students: int, simulation_number: int = 1, show_plot
     
     # 自动plot所有未plot的实验并更新平均实验图像
     update_average_analysis(seats)
+    
+    return True
 
 
 def plot_combined_simulation(json_files, save_path=None):
@@ -288,9 +296,8 @@ def plot_combined_simulation(json_files, save_path=None):
     if len(all_data) > 3:
         all_data = all_data[:3]
     
-    # 设置中文字体支持
-    plt.rcParams['font.sans-serif'] = ['SimHei', 'DejaVu Sans']  # 用来正常显示中文标签
-    plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+    # Set English label support
+    plt.rcParams['axes.unicode_minus'] = False  # Used to properly display minus signs
 
     # 创建图形
     fig, axes = plt.subplots(2, 1, figsize=(16, 10))
@@ -299,7 +306,7 @@ def plot_combined_simulation(json_files, save_path=None):
     with open(json_files[0], 'r', encoding='utf-8') as f:
         full_data = json.load(f)
     initial_config = full_data[0]  # 获取初始配置信息
-    test_scale = initial_config.get('test_scale', '未知规模')
+    test_scale = initial_config.get('test_scale', '未知Scale')
     
     # 获取座位数（从seat_info中计算）
     seat_info = initial_config.get('seat_info', {})
@@ -315,9 +322,9 @@ def plot_combined_simulation(json_files, save_path=None):
 
     # 设置总标题
     if student_count > 0:
-        suptitle_text = f' 规模: {test_scale}\n座位总数: {seat_count}, 学生总数: {student_count}'
+        suptitle_text = f' Scale: {test_scale}\nTotal Seats: {seat_count}, Total Students: {student_count}'
     else:
-        suptitle_text = f'规模: {test_scale}\n座位总数: {seat_count}'
+        suptitle_text = f'Scale: {test_scale}\nTotal Seats: {seat_count}'
     
     fig.suptitle(suptitle_text, fontsize=16, y=0.98)
     
@@ -339,9 +346,9 @@ def plot_combined_simulation(json_files, save_path=None):
         avg_unsatisfied_nums = [sum(data['unsatisfied_nums'][i] for data in all_data if i < len(data['unsatisfied_nums'])) / len(all_data) for i in range(num_points)]
         avg_cleared_seats = [sum(data['cleared_seats'][i] for data in all_data if i < len(data['cleared_seats'])) / len(all_data) for i in range(num_points)]
 
-    # 第一张图：座位占有率和占座率
+    # 第一张图：Seat Occupancy Rate和占座率
     ax1 = axes[0]
-    ax1_twin = ax1.twinx()  # 创建第二个y轴用于显示占座数量
+    ax1_twin = ax1.twinx()  # 创建第二个y轴用于显示Seat Reservation Count
 
     # 绘制次要数据（淡颜色，虚线）- 只绘制前3次实验
     for i, data in enumerate(all_data[:3]):  # 只取前3次
@@ -349,9 +356,9 @@ def plot_combined_simulation(json_files, save_path=None):
             # 如果只有1次实验，不绘制次要数据
             continue
             
-        # 获取时间数据
+        # 获取Time数据
         time_objects = [datetime.strptime(t, '%H:%M') for t in data['time_data']]
-        # 过滤时间范围内的数据点
+        # 过滤Time范围内的数据点
         filtered_times = []
         filtered_taken_rates = []
         filtered_reversed_seats = []
@@ -367,9 +374,9 @@ def plot_combined_simulation(json_files, save_path=None):
 
     # 绘制平均值（主要数据，实线，正常颜色和线宽）
     if avg_taken_rate_percentages and avg_reversed_seats:
-        # 获取时间数据（使用第一个数据的时间轴作为参考）
+        # 获取Time数据（使用第一个数据的Time轴作为参考）
         time_objects = [datetime.strptime(t, '%H:%M') for t in all_data[0]['time_data']]
-        # 过滤时间范围内的数据点
+        # 过滤Time范围内的数据点
         filtered_times = []
         filtered_avg_taken_rates = []
         filtered_avg_reversed_seats = []
@@ -380,13 +387,13 @@ def plot_combined_simulation(json_files, save_path=None):
                 filtered_avg_reversed_seats.append(avg_reversed_seats[j])
         
         # 绘制平均值（主要曲线）
-        ax1.plot(filtered_times, filtered_avg_taken_rates, label='平均座位占有率', marker='o', color='#4A90A4', linewidth=2)
-        ax1_twin.plot(filtered_times, filtered_avg_reversed_seats, label='平均占座数量', marker='s', color='#967E7B', linewidth=2)
+        ax1.plot(filtered_times, filtered_avg_taken_rates, label='平均Seat Occupancy Rate', marker='o', color='#4A90A4', linewidth=2)
+        ax1_twin.plot(filtered_times, filtered_avg_reversed_seats, label='平均Seat Reservation Count', marker='s', color='#967E7B', linewidth=2)
     elif len(all_data) == 1:
         # 如果只有1次实验，绘制这次实验的曲线作为主要曲线
         data = all_data[0]
         time_objects = [datetime.strptime(t, '%H:%M') for t in data['time_data']]
-        # 过滤时间范围内的数据点
+        # 过滤Time范围内的数据点
         filtered_times = []
         filtered_taken_rates = []
         filtered_reversed_seats = []
@@ -397,13 +404,13 @@ def plot_combined_simulation(json_files, save_path=None):
                 filtered_reversed_seats.append(data['reversed_seats'][j])
         
         # 绘制单次实验的曲线
-        ax1.plot(filtered_times, filtered_taken_rates, label='座位占有率', marker='o', color='#4A90A4', linewidth=2)
-        ax1_twin.plot(filtered_times, filtered_reversed_seats, label='占座数量', marker='s', color='#967E7B', linewidth=2)
+        ax1.plot(filtered_times, filtered_taken_rates, label='Seat Occupancy Rate', marker='o', color='#4A90A4', linewidth=2)
+        ax1_twin.plot(filtered_times, filtered_reversed_seats, label='Seat Reservation Count', marker='s', color='#967E7B', linewidth=2)
 
-    ax1.set_title('图1: 座位占有率和占座数量随时间变化', fontsize=14, pad=20)
-    ax1.set_xlabel('时间', fontsize=12)
-    ax1.set_ylabel('座位占有率 (%)', color='#4A90A4', fontsize=12)
-    ax1_twin.set_ylabel('占座数量', color='#967E7B', fontsize=12)
+    ax1.set_title('图1: Seat Occupancy Rate和Seat Reservation Count随Time变化', fontsize=14, pad=20)
+    ax1.set_xlabel('Time', fontsize=12)
+    ax1.set_ylabel('Seat Occupancy Rate (%)', color='#4A90A4', fontsize=12)
+    ax1_twin.set_ylabel('Seat Reservation Count', color='#967E7B', fontsize=12)
 
     # 合并图例
     lines1, labels1 = ax1.get_legend_handles_labels()
@@ -417,10 +424,10 @@ def plot_combined_simulation(json_files, save_path=None):
 
     # 设置x轴格式
     ax1.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
-    ax1.xaxis.set_major_locator(mdates.HourLocator(interval=1))  # 每小时一个刻度
+    ax1.xaxis.set_major_locator(mdates.HourLocator(interval=1))  # One tick per hour
     plt.setp(ax1.get_xticklabels(), rotation=45, ha="right")
 
-    # 第二张图：不满意数及清理座位数随时间变化
+    # 第二张图：Unsatisfied Count及Cleared Seats Count随Time变化
     ax2 = axes[1]
 
     # 绘制次要数据（淡颜色，虚线）- 只绘制前3次实验
@@ -429,9 +436,9 @@ def plot_combined_simulation(json_files, save_path=None):
             # 如果只有1次实验，不绘制次要数据
             continue
 
-        # 获取时间数据
+        # 获取Time数据
         time_objects = [datetime.strptime(t, '%H:%M') for t in data['time_data']]
-        # 过滤时间范围内的数据点
+        # 过滤Time范围内的数据点
         filtered_times = []
         filtered_unsatisfied_nums = []
         filtered_cleared_seats = []
@@ -447,9 +454,9 @@ def plot_combined_simulation(json_files, save_path=None):
 
     # 绘制平均值（主要数据，实线，正常颜色和线宽）
     if avg_unsatisfied_nums and avg_cleared_seats:
-        # 获取时间数据（使用第一个数据的时间轴作为参考）
+        # 获取Time数据（使用第一个数据的Time轴作为参考）
         time_objects = [datetime.strptime(t, '%H:%M') for t in all_data[0]['time_data']]
-        # 过滤时间范围内的数据点
+        # 过滤Time范围内的数据点
         filtered_times = []
         filtered_avg_unsatisfied_nums = []
         filtered_avg_cleared_seats = []
@@ -460,13 +467,13 @@ def plot_combined_simulation(json_files, save_path=None):
                 filtered_avg_cleared_seats.append(avg_cleared_seats[j])
 
         # 绘制平均值（主要曲线）
-        ax2.plot(filtered_times, filtered_avg_unsatisfied_nums, label='平均不满意数', marker='o', color='#7F9D9F', linewidth=2)
-        ax2.plot(filtered_times, filtered_avg_cleared_seats, label='平均清理座位数', marker='s', color='#6C6C6C', linewidth=2)
+        ax2.plot(filtered_times, filtered_avg_unsatisfied_nums, label='平均Unsatisfied Count', marker='o', color='#7F9D9F', linewidth=2)
+        ax2.plot(filtered_times, filtered_avg_cleared_seats, label='平均Cleared Seats Count', marker='s', color='#6C6C6C', linewidth=2)
     elif len(all_data) == 1:
         # 如果只有1次实验，绘制这次实验的曲线作为主要曲线
         data = all_data[0]
         time_objects = [datetime.strptime(t, '%H:%M') for t in data['time_data']]
-        # 过滤时间范围内的数据点
+        # 过滤Time范围内的数据点
         filtered_times = []
         filtered_unsatisfied_nums = []
         filtered_cleared_seats = []
@@ -477,12 +484,12 @@ def plot_combined_simulation(json_files, save_path=None):
                 filtered_cleared_seats.append(data['cleared_seats'][j])
 
         # 绘制单次实验的曲线
-        ax2.plot(filtered_times, filtered_unsatisfied_nums, label='不满意数', marker='o', color='#7F9D9F', linewidth=2)
-        ax2.plot(filtered_times, filtered_cleared_seats, label='清理座位数', marker='s', color='#6C6C6C', linewidth=2)
+        ax2.plot(filtered_times, filtered_unsatisfied_nums, label='Unsatisfied Count', marker='o', color='#7F9D9F', linewidth=2)
+        ax2.plot(filtered_times, filtered_cleared_seats, label='Cleared Seats Count', marker='s', color='#6C6C6C', linewidth=2)
 
-    ax2.set_title('图2: 不满意数及清理座位数随时间变化', fontsize=14, pad=20)
-    ax2.set_xlabel('时间', fontsize=12)
-    ax2.set_ylabel('累积数量', color='black', fontsize=12)
+    ax2.set_title('图2: Unsatisfied Count及Cleared Seats Count随Time变化', fontsize=14, pad=20)
+    ax2.set_xlabel('Time', fontsize=12)
+    ax2.set_ylabel('Cumulative Count', color='black', fontsize=12)
 
     # 合并图例
     lines3, labels3 = ax2.get_legend_handles_labels()
@@ -496,7 +503,7 @@ def plot_combined_simulation(json_files, save_path=None):
 
     # 设置x轴格式
     ax2.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
-    ax2.xaxis.set_major_locator(mdates.HourLocator(interval=1))  # 每小时一个刻度
+    ax2.xaxis.set_major_locator(mdates.HourLocator(interval=1))  # One tick per hour
     plt.setp(ax2.get_xticklabels(), rotation=45, ha="right")
 
     # 调整子图间距，避免标题重叠
@@ -567,9 +574,9 @@ def plot_analysis(seat_count: int, min_students: int = None, max_students: int =
 def plot_simulation(json_file_path, save_to_path=None):
     """
     绘制模拟数据的三张图表
-    1. 座位占有率和占座率
-    2. 不满意数及其增长数和清理座位数及其增长数
-    3. 图书馆中座位的拥挤程度（还是用library的评分）然后平均归一化与座位占有率
+    1. Seat Occupancy Rate和占座率
+    2. Unsatisfied Count及其增长数和Cleared Seats Count及其增长数
+    3. 图书馆中座位的拥挤程度（还是用library的评分）然后平均归一化与Seat Occupancy Rate
     """
     # 解析数据
     data = parse_json_data(json_file_path)
@@ -579,8 +586,8 @@ def plot_simulation(json_file_path, save_to_path=None):
         full_data = json.load(f)
     
     initial_config = full_data[0]  # 获取初始配置信息
-    test_name = initial_config.get('test_name', '未知测试')
-    test_scale = initial_config.get('test_scale', '未知规模')
+    test_name = initial_config.get('test_name', 'Unknown Test')
+    test_scale = initial_config.get('test_scale', '未知Scale')
     
     # 获取座位数（从seat_info中计算）
     seat_info = initial_config.get('seat_info', {})
@@ -595,14 +602,14 @@ def plot_simulation(json_file_path, save_to_path=None):
         except:
             student_count = 0
     
-    # 将时间字符串转换为datetime对象以便绘图
+    # 将Time字符串转换为datetime对象以便绘图
     time_objects = [datetime.strptime(t, '%H:%M') for t in data['time_data']]
     
     # 设置x轴范围为7a.m到12p.m (7:00到12:00)
     start_time = datetime.strptime('07:00', '%H:%M')
     end_time = datetime.strptime('23:59', '%H:%M')
     
-    # 过滤时间范围内的数据点，只保留7:00到12:00之间的数据
+    # 过滤Time范围内的数据点，只保留7:00到12:00之间的数据
     filtered_data = {
         'time_objects': [],
         'taken_rate_percentages': [],
@@ -622,27 +629,27 @@ def plot_simulation(json_file_path, save_to_path=None):
     # 创建图形
     fig, axes = plt.subplots(2, 1, figsize=(16, 10))
     
-    # 设置总标题，包含测试名称、规模和座位/学生数量信息
+    # 设置总标题，包含测试名称、Scale和座位/学生数量信息
     if student_count > 0:
-        suptitle_text = f' 规模: {test_scale}\n座位总数: {seat_count}, 学生总数: {student_count}'
+        suptitle_text = f' Scale: {test_scale}\nTotal Seats: {seat_count}, Total Students: {student_count}'
     else:
-        suptitle_text = f'规模: {test_scale}\n座位总数: {seat_count}'
+        suptitle_text = f'Scale: {test_scale}\nTotal Seats: {seat_count}'
     
     fig.suptitle(suptitle_text, fontsize=16, y=0.98)
     
-    # 第一张图：座位占有率和占座率
+    # 第一张图：Seat Occupancy Rate和占座率
     ax1 = axes[0]
-    ax1_twin = ax1.twinx()  # 创建第二个y轴用于显示占座数量
+    ax1_twin = ax1.twinx()  # 创建第二个y轴用于显示Seat Reservation Count
     
-    # 绘制座位占有率百分比（使用过滤后的数据）
-    line1 = ax1.plot(filtered_data['time_objects'], filtered_data['taken_rate_percentages'], label='座位占有率', marker='o', color='#4A90A4', linewidth=2)  # 冷蓝色系
-    # 绘制占座数量（使用过滤后的数据）
-    line2 = ax1_twin.plot(filtered_data['time_objects'], filtered_data['reversed_seats'], label='占座数量', marker='s', color='#967E7B', linewidth=2)  # 灰褐色系
+    # 绘制Seat Occupancy Rate百分比（使用过滤后的数据）
+    line1 = ax1.plot(filtered_data['time_objects'], filtered_data['taken_rate_percentages'], label='Seat Occupancy Rate', marker='o', color='#4A90A4', linewidth=2)  # Cold Blue Series
+    # 绘制Seat Reservation Count（使用过滤后的数据）
+    line2 = ax1_twin.plot(filtered_data['time_objects'], filtered_data['reversed_seats'], label='Seat Reservation Count', marker='s', color='#967E7B', linewidth=2)  # Gray Brown Series
     
-    ax1.set_title('图1: 座位占有率和占座数量随时间变化', fontsize=14, pad=20)
-    ax1.set_xlabel('时间', fontsize=12)
-    ax1.set_ylabel('座位占有率 (%)', color='#4A90A4', fontsize=12)
-    ax1_twin.set_ylabel('占座数量', color='#967E7B', fontsize=12)
+    ax1.set_title('图1: Seat Occupancy Rate和Seat Reservation Count随Time变化', fontsize=14, pad=20)
+    ax1.set_xlabel('Time', fontsize=12)
+    ax1.set_ylabel('Seat Occupancy Rate (%)', color='#4A90A4', fontsize=12)
+    ax1_twin.set_ylabel('Seat Reservation Count', color='#967E7B', fontsize=12)
     
     # 合并图例
     lines1, labels1 = ax1.get_legend_handles_labels()
@@ -656,21 +663,21 @@ def plot_simulation(json_file_path, save_to_path=None):
     
     # 设置x轴格式
     ax1.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
-    ax1.xaxis.set_major_locator(mdates.HourLocator(interval=1))  # 每小时一个刻度
+    ax1.xaxis.set_major_locator(mdates.HourLocator(interval=1))  # One tick per hour
     plt.setp(ax1.get_xticklabels(), rotation=45, ha="right")
     
-    # 第二张图：不满意数及其增长数和清理座位数及其增长数
+    # 第二张图：Unsatisfied Count及其增长数和Cleared Seats Count及其增长数
     ax2 = axes[1]
     
-    # 绘制不满意数和清理座位数（左y轴）（使用过滤后的数据）
-    line3 = ax2.plot(filtered_data['time_objects'], filtered_data['unsatisfied_nums'], label='不满意数', marker='o', color='#7F9D9F', linewidth=2)  # 灰绿色系
-    line4 = ax2.plot(filtered_data['time_objects'], filtered_data['cleared_seats'], label='清理座位数', marker='s', color='#6C6C6C', linewidth=2)  # 灰色系
+    # 绘制Unsatisfied Count和Cleared Seats Count（左y轴）（使用过滤后的数据）
+    line3 = ax2.plot(filtered_data['time_objects'], filtered_data['unsatisfied_nums'], label='Unsatisfied Count', marker='o', color='#7F9D9F', linewidth=2)  # Gray Green Series
+    line4 = ax2.plot(filtered_data['time_objects'], filtered_data['cleared_seats'], label='Cleared Seats Count', marker='s', color='#6C6C6C', linewidth=2)  # Gray Series
     
     # 创建第二个y轴用于显示增长数
     
-    ax2.set_title('图2: 不满意数及清理座位数随时间变化', fontsize=14, pad=20)
-    ax2.set_xlabel('时间', fontsize=12)
-    ax2.set_ylabel('累积数量', color='black', fontsize=12)
+    ax2.set_title('图2: Unsatisfied Count及Cleared Seats Count随Time变化', fontsize=14, pad=20)
+    ax2.set_xlabel('Time', fontsize=12)
+    ax2.set_ylabel('Cumulative Count', color='black', fontsize=12)
     
     # 合并图例
     lines3, labels3 = ax2.get_legend_handles_labels()
@@ -684,7 +691,7 @@ def plot_simulation(json_file_path, save_to_path=None):
     
     # 设置x轴格式
     ax2.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
-    ax2.xaxis.set_major_locator(mdates.HourLocator(interval=1))  # 每小时一个刻度
+    ax2.xaxis.set_major_locator(mdates.HourLocator(interval=1))  # One tick per hour
     plt.setp(ax2.get_xticklabels(), rotation=45, ha="right")
     
     # 调整子图间距，避免标题重叠

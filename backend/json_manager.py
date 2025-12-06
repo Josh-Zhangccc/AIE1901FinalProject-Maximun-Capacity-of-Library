@@ -82,13 +82,18 @@ class JsonManager:
         '''创建初始json文件的结构'''
         return self.stru
     
-    def save_json(self) -> bool:
-        """将数据保存到json文件中"""
+    def save_json(self, file_path=None) -> bool:
+        """将数据保存到json文件中
+        
+        Args:
+            file_path (str, optional): 要保存到的文件路径. 如果为None, 使用实例的file_path
+        """
+        save_path = file_path if file_path is not None else self.file_path
         try:
-            os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
-            with open(self.file_path, 'w', encoding='utf-8') as f:
+            os.makedirs(os.path.dirname(save_path), exist_ok=True)
+            with open(save_path, 'w', encoding='utf-8') as f:
                 json.dump(self.data, f, ensure_ascii=False, indent=2)
-                print(f'保存成功到{self.file_path}')
+                print(f'保存成功到{save_path}')
             return True
         except Exception as e:
             print(f"保存失败: {e}")

@@ -1,8 +1,8 @@
-# AIE1901 期末考试模拟项目
+# AIE1901 期末考试模拟项目 - 图书馆最大容量研究
 
 ## 项目概述
 
-这是一个基于Python的图书馆座位占用行为模拟系统，旨在研究学生占座行为与图书馆管理措施对空间利用率和图书馆最大动态容量之间的关系。项目使用DeepSeek的LLM API来模拟学生行为，包含后端Python代码。
+这是一个基于Python的图书馆座位占用行为模拟系统，旨在研究学生占座行为与图书馆管理措施对空间利用率和图书馆最大动态容量之间的关系。项目使用DeepSeek的LLM API来模拟学生行为，包含完整的后端代码、现代化前端界面和数据可视化功能。
 
 项目核心功能：
 - 模拟图书馆环境（支持自定义网格大小，默认3x3网格，9个座位作为演示，可扩展到更大规模）
@@ -13,6 +13,8 @@
 - 提供参数调节功能和交互式命令行界面
 - 实现模拟数据的可视化分析功能
 - 自动分析图书馆最大动态容量相关指标
+- **新增**: 现代化Flask前端界面，支持多语言、多进程加速
+- **新增**: 范围模拟和重复模拟功能
 
 ## 项目结构
 
@@ -35,6 +37,25 @@ AIE1901_FinalExamSimulation/
 │       ├── test_prompt.py  # 提示词功能测试
 │       ├── test_seats.py   # 座位类单元测试
 │       └── test_students.py # 学生类单元测试
+├── frontend/                # 前端代码（新增）
+│   ├── app.py              # Flask应用主文件
+│   ├── static/             # 静态资源
+│   │   ├── css/
+│   │   │   └── style.css   # 样式文件
+│   │   ├── js/
+│   │   │   ├── main.js     # 主要JavaScript逻辑
+│   │   │   ├── start_simulation.js    # 开始模拟页面逻辑
+│   │   │   ├── repeat_simulation.js   # 重复模拟页面逻辑
+│   │   │   ├── view_plots.js          # 查看图像页面逻辑
+│   │   │   └── simulation_records.js  # 模拟记录页面逻辑
+│   │   └── images/
+│   │       └── placeholder_plot.svg   # 占位图像
+│   └── templates/          # HTML模板
+│       ├── index.html      # 首页
+│       ├── start_simulation.html      # 开始模拟页面
+│       ├── repeat_simulation.html     # 重复模拟页面
+│       ├── view_plots.html            # 查看图像页面
+│       └── simulation_records.html    # 模拟记录页面
 ├── simulation_data/        # 模拟数据存储目录
 │   ├── figures/            # 存储可视化图表
 │   ├── simulations/        # 存储模拟数据的JSON文件
@@ -55,9 +76,13 @@ AIE1901_FinalExamSimulation/
 ├── test_agents_retry.py   # 测试脚本
 ├── test_analysis.py       # 测试脚本
 ├── test_auto_simulation_number.py # 测试脚本
-├── test_new_save_figure.py # 测试脚本
-├── test_new_simulation.py # 测试脚本
-├── test_plot_analysis.py  # 测试脚本
+├── test_library_new_attributes.py # 测试脚本（新增）
+├── test_library_without_api.py # 测试脚本（新增）
+├── test_new_attributes.py # 测试脚本（新增）
+├── test_new_save_figure.py # 测试脚本（新增）
+├── test_new_simulation.py # 测试脚本（新增）
+├── test_plot_analysis.py  # 测试脚本（新增）
+├── test_reverse_seat_logic.py # 测试脚本（新增）
 ├── test_save_figure.py    # 测试脚本
 ├── utils.py               # 工具函数，包含API配置
 └── 要求.txt              # 项目需求文档
@@ -66,10 +91,12 @@ AIE1901_FinalExamSimulation/
 ## 技术栈
 
 - **后端**: Python 3.13.9
+- **前端**: Flask 3.1.2, Bootstrap 5, JavaScript
 - **LLM API**: DeepSeek (通过OpenAI包调用)
-- **依赖管理**: Conda
+- **依赖管理**: Conda/pip
 - **HTTP Client**: OpenAI Python Package
 - **数据可视化**: matplotlib, pandas
+- **多进程**: multiprocessing
 - **其他库**: datetime, enum, random等标准库
 
 ## 核心组件
@@ -149,6 +176,19 @@ AIE1901_FinalExamSimulation/
 - 实现了实时的模拟状态查看和参数调整功能
 - 集成JSON管理器，实现模拟数据的自动保存
 
+### 前端系统 (frontend/)
+- **Flask应用** (app.py): 提供REST API和页面路由
+- **模板系统** (templates/): Jinja2模板引擎，提供用户界面
+- **静态资源** (static/): CSS、JavaScript、图像资源
+- **功能模块**:
+  - 首页: 提供开始模拟、重复模拟、绘制/查看图像、模拟记录四个主要功能入口
+  - 开始模拟: 允许用户设置各种参数（网格大小、学生数量、专业比例、清理时间等）进行模拟
+  - 重复模拟: 基于现有模拟记录重复运行模拟
+  - 绘制/查看图像: 生成和查看模拟结果的可视化图表
+  - 模拟记录: 查看和管理所有模拟记录
+- **多语言支持**: 支持中英文界面切换
+- **多进程加速**: 使用multiprocessing实现并行模拟
+
 ## 环境配置
 
 使用Conda创建指定环境：
@@ -165,18 +205,73 @@ conda env create -f seat_simulation_env.yml
 - `API_KEY`: sk-cf8230f3e78a4cedadf7f7ab158f5441
 - `MODEL`: deepseek-chat
 
-### 运行方式
+## 运行方式
 
-当前运行方式：
+### 方式1：直接运行主程序
+主程序（main.py）默认会运行一个自动化的模拟系列，从9个学生到18个学生，每种学生数量重复3次，使用3x3网格（9个座位）进行模拟。
 ```bash
-# 激活conda环境
-conda activate seat-simulation
-
-# 运行主程序（默认使用较小规模进行演示）
 python main.py
 ```
 
-运行后会自动显示可视化结果。
+### 方式2：修改主程序参数
+您可以修改main.py中的参数来自定义模拟：
+- `row` 和 `column`：定义图书馆座位网格大小
+- `range(3)` 中的数字：定义每种学生数量的重复实验次数
+- `range(9,19,1)`：定义学生数量范围（从9到18，每次递增1）
+
+### 方式3：通过命令行界面运行
+您也可以修改main.py文件，创建一个交互式的命令行界面来运行模拟：
+```python
+from backend.simulation import Simulation
+
+# 创建模拟实例
+sim = Simulation(row=3, column=3, num_students=15, simulation_number=1)
+sim.run(run_all=False)  # run_all=False 会启动交互式命令行界面
+```
+
+交互式命令行支持以下命令：
+- `step`: 执行下一步模拟
+- `status`: 显示当前模拟状态
+- `seats`: 显示座位占用情况
+- `time`: 显示当前模拟时间
+- `set_limit [minutes]`: 设置占座时间限制（分钟）
+- `quit`: 退出模拟
+- `help`: 显示帮助信息
+
+### 方式4：使用独立的模拟脚本
+您也可以直接使用backend.simulation模块创建模拟：
+```python
+from backend.simulation import Simulation
+
+# 创建一个3x3网格，15个学生的模拟，保存为第1次实验
+sim = Simulation(row=3, column=3, num_students=15, simulation_number=1)
+sim.run(run_all=True)  # run_all=True 会自动运行完整模拟
+```
+
+### 方式5：启动前端界面
+项目还提供了现代化的前端界面，使用Flask构建，提供直观的用户界面来控制和监控模拟过程：
+
+1. 确保已安装项目依赖：
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. 进入frontend目录并启动应用：
+   ```bash
+   cd frontend
+   python app.py
+   ```
+
+3. 访问 http://localhost:5000 查看应用
+
+前端界面包含以下功能：
+- **首页**：提供开始模拟、重复模拟、绘制/查看图像、模拟记录四个主要功能入口
+- **开始模拟**：允许用户设置各种参数（网格大小、学生数量、专业比例、清理时间等）进行模拟
+- **重复模拟**：基于现有模拟记录重复运行模拟
+- **绘制/查看图像**：生成和查看模拟结果的可视化图表
+- **模拟记录**：查看和管理所有模拟记录
+- **多语言支持**：支持中英文界面切换
+- **多进程加速**：使用multiprocessing实现并行模拟
 
 ## 测试
 
@@ -193,6 +288,17 @@ python main.py
   - 测试图书馆座位计数功能
 - `problem_check.py`: 项目问题检查脚本，包含多项测试
 - `test_plot.py`: 可视化功能测试脚本
+- **新增测试**:
+  - `test_library_new_attributes.py`: 测试图书馆新属性
+  - `test_library_without_api.py`: 测试无API调用的图书馆功能
+  - `test_new_attributes.py`: 测试新学生属性
+  - `test_new_save_figure.py`: 测试新图像保存功能
+  - `test_new_simulation.py`: 测试新模拟功能
+  - `test_plot_analysis.py`: 测试绘图分析功能
+  - `test_reverse_seat_logic.py`: 测试占座逻辑
+  - `test_agents_retry.py`: 测试代理重试机制
+  - `test_analysis.py`: 测试分析功能
+  - `test_auto_simulation_number.py`: 测试自动模拟编号功能
 
 运行测试：
 ```bash
@@ -207,33 +313,21 @@ python test_plot.py      # 可视化功能测试
 
 ## 模拟特性
 
-- **时间系统**: 模拟一天(7:00-24:00)，图书馆时间更新步长为15分钟，学生时间更新步长也为15分钟
+- **时间系统**: 模拟一天(7:00-23:59)，图书馆时间更新步长为15分钟，学生时间更新步长也为15分钟
 - **学生行为**: 基于课程表、作息和满意度的智能决策
-- **数据记录**: 记录每次更新的数据以支持模拟复现，已实现
 - **参数调节**: 用户可调节网格大小、学生数量、专业比例、座位偏好、检查清理时间等参数
-- **座位初始化**: 支持自定义网格大小的座位，随机分配台灯、插座属性，边缘座位为靠窗座位
-- **座位状态管理**: 包括占用时间跟踪和状态转换
-- **学生类型**: 支持3种专业(人文、科学、工程)和3种学习程度(勤奋/中等/懒惰)的学生，共9种不同类型的学生
-- **交互测试**: 包含综合交互测试，验证系统各组件间的协作关系
-- **交互式命令行界面**: 支持实时查看模拟状态、座位概览和调整时间限制
-- **数据持久化**: 模拟数据自动保存到simulation_data目录中
 - **数据可视化**: 自动生成整合图像，展示模拟结果的关键指标
 - **自动编号系统**: 根据学生数量自动生成模拟编号，便于数据管理
 - **自动分析系统**: 根据座位数自动分析相关指标并生成分析图表
+- **数据整合功能**: 将相同参数的多次实验整合到一张图像中
+- **多进程支持**: 支持并行模拟以提高性能
+- **前端界面**: 提供直观的Web界面进行模拟控制和数据查看
 
 ## 提示词系统 (prompt.py)
 
 包含两个主要的LLM提示词模板：
 - `schedule_prompt`: 根据学生特征生成日程表，包含start、learn、eat、course、rest、end六种行为
 - `leave_prompt`: 根据学生性格和满意度判断是否占座，包含action和reason字段
-
-## 前端功能（计划中）
-
-- 中英文语言选择
-- 创建新模拟/复现旧模拟
-- 滑块调节网格大小、学生数量、座位偏好、检查和清理时间
-- 图书馆座位可视化显示
-- 模拟数据可视化图表，支持多种可隐藏的图表
 
 ## 项目状态
 
@@ -250,9 +344,11 @@ python test_plot.py      # 可视化功能测试
 - 数据可视化功能
 - 图书馆最大动态容量分析系统
 - 自动编号和整合显示功能
+- **新增**: 现代化Flask前端界面
+- **新增**: 多进程并行模拟支持
+- **新增**: 范围模拟和重复模拟功能
 
 **待完善部分：**
-- 前端界面需要开发
 - 完整的模拟流程优化
 - 性能优化（如解决Library初始化时可能导致的长时间延迟问题）
 
@@ -368,7 +464,6 @@ python test_plot.py      # 可视化功能测试
 - `cleared_seats`: Number of cleared rule-violating reserved seats
 - `reversed_seats`: Current number of reserved seats
 - `taken_rate`: Seat occupancy rate (format: "count (percentage%)")
-
 
 ### Visualization Charts Instructions
 

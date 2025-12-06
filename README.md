@@ -90,6 +90,82 @@ AIE1901_FinalExamSimulation/
    python main.py
    ```
 
+#### 详细启动说明
+
+**方式1：直接运行主程序**
+
+主程序（main.py）默认会运行一个自动化的模拟系列，从9个学生到18个学生，每种学生数量重复3次，使用3x3网格（9个座位）进行模拟。
+
+```bash
+python main.py
+```
+
+**方式2：修改主程序参数**
+
+您可以修改main.py中的参数来自定义模拟：
+- `row` 和 `column`：定义图书馆座位网格大小
+- `range(3)` 中的数字：定义每种学生数量的重复实验次数
+- `range(9,19,1)`：定义学生数量范围（从9到18，每次递增1）
+
+**方式3：通过命令行界面运行**
+
+您也可以修改main.py文件，创建一个交互式的命令行界面来运行模拟：
+
+```python
+from backend.simulation import Simulation
+
+# 创建模拟实例
+sim = Simulation(row=3, column=3, num_students=15, simulation_number=1)
+sim.run(run_all=False)  # run_all=False 会启动交互式命令行界面
+```
+
+交互式命令行支持以下命令：
+- `step`: 执行下一步模拟
+- `status`: 显示当前模拟状态
+- `seats`: 显示座位占用情况
+- `time`: 显示当前模拟时间
+- `set_limit [minutes]`: 设置占座时间限制（分钟）
+- `quit`: 退出模拟
+- `help`: 显示帮助信息
+
+**方式4：使用独立的模拟脚本**
+
+您也可以直接使用backend.simulation模块创建模拟：
+
+```python
+from backend.simulation import Simulation
+
+# 创建一个3x3网格，15个学生的模拟，保存为第1次实验
+sim = Simulation(row=3, column=3, num_students=15, simulation_number=1)
+sim.run(run_all=True)  # run_all=True 会自动运行完整模拟
+```
+
+**方式5：启动前端界面**
+
+项目还提供了现代化的前端界面，使用Flask构建，提供直观的用户界面来控制和监控模拟过程：
+
+1. 确保已安装项目依赖：
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. 进入frontend目录并启动应用：
+   ```bash
+   cd frontend
+   python app.py
+   ```
+
+3. 访问 http://localhost:5000 查看应用
+
+前端界面包含以下功能：
+- **首页**：提供开始模拟、重复模拟、绘制/查看图像、模拟记录四个主要功能入口
+- **开始模拟**：允许用户设置各种参数（网格大小、学生数量、专业比例、清理时间等）进行模拟
+- **重复模拟**：基于现有模拟记录重复运行模拟
+- **绘制/查看图像**：生成和查看模拟结果的可视化图表
+- **模拟记录**：查看和管理所有模拟记录
+- **多语言支持**：支持中英文界面切换
+- **多进程加速**：使用multiprocessing实现并行模拟
+
 ### 项目特性
 
 - **时间系统**: 模拟一天(7:00-23:59)，图书馆时间更新步长为15分钟，学生时间更新步长也为15分钟
@@ -102,7 +178,10 @@ AIE1901_FinalExamSimulation/
 
 ### API配置
 
-项目中的API密钥已经配置在`utils.py`文件中，但为了安全起见，该文件已被添加到.gitignore中，不会上传到GitHub。
+项目使用DeepSeek的LLM API来模拟学生行为，API配置信息位于`utils.py`文件中，包括：
+- `BASE_URL`: API基础URL
+- `API_KEY`: API密钥
+- `MODEL`: 使用的模型名称
 
 ### 测试
 
@@ -116,6 +195,8 @@ python backend/test/test_interactions.py
 python problem_check.py  # 根目录的问题检查脚本
 python test_plot.py      # 可视化功能测试
 ```
+
+---
 
 ---
 
@@ -195,45 +276,85 @@ AIE1901_FinalExamSimulation/
 
 ### Installation and Running
 
-1. Clone the project to your local machine
-2. Use Conda to create the specified environment:
-   ```bash
-   conda env create -f seat_simulation_env.yml
-   ```
-3. Activate the conda environment:
-   ```bash
-   conda activate seat-simulation
-   ```
-4. Run the main program:
-   ```bash
-   python main.py
-   ```
+\n1. Clone the project to your local machine\n2. Use Conda to create the specified environment:\n   ```bash\n   conda env create -f seat_simulation_env.yml\n   ```\n3. Activate the conda environment:\n   ```bash\n   conda activate seat-simulation\n   ```\n4. Run the main program:\n   ```bash\n   python main.py\n   ```\n\n#### Detailed Launch Instructions
 
-### Project Features
+**Method 1: Directly Run Main Program**
 
-- **Time System**: Simulate a day (7:00-23:59), with 15-minute library time increments
-- **Student Behavior**: Intelligent decision-making based on timetables, schedules, and satisfaction
-- **Parameter Adjustment**: Users can adjust grid size, number of students, major ratios, seat preferences, check and cleanup times
-- **Data Visualization**: Automatically generate integrated charts showing key simulation indicators
-- **Auto Numbering System**: Automatically generate simulation numbers based on student count for easy data management
-- **Auto Analysis System**: Automatically analyze relevant indicators by seat count and generate analysis charts
-- **Data Integration Feature**: Integrate multiple experiments with the same parameters into one chart
+The main program (main.py) by default runs an automated simulation series, from 9 students to 18 students, with 3 repetitions for each student count, using a 3x3 grid (9 seats) for simulation.
 
-### API Configuration
+`ash
+python main.py
+`
 
-The API key in the project is configured in the `utils.py` file, but for security reasons, this file has been added to .gitignore and will not be uploaded to GitHub.
+**Method 2: Modify Main Program Parameters**
 
-### Testing
+You can modify parameters in main.py to customize the simulation:
+- 
+ow and column: Define the library seat grid size
+- Numbers in 
+ange(3): Define the number of repeated experiments for each student count
+- 
+ange(9,19,1): Define the student count range (from 9 to 18, increment by 1)
 
-Run tests:
-```bash
-python -m pytest backend/test/
-# Or run specific tests
-python backend/test/test_seats.py
-python backend/test/test_students.py
-python backend/test/test_interactions.py
-python problem_check.py  # Root directory problem check script
-python test_plot.py      # Visualization function test
+**Method 3: Run Through Command Line Interface**
+
+You can also modify the main.py file to create an interactive command-line interface for running simulations:
+
+`python
+from backend.simulation import Simulation
+
+# Create simulation instance
+sim = Simulation(row=3, column=3, num_students=15, simulation_number=1)
+sim.run(run_all=False)  # run_all=False launches interactive command-line interface
+`
+
+Interactive command-line supports the following commands:
+- step: Execute next simulation step
+- status: Display current simulation status
+- seats: Show seat occupancy situation
+- 	ime: Show current simulation time
+- set_limit [minutes]: Set seat reservation time limit (in minutes)
+- quit: Exit simulation
+- help: Show help information
+
+**Method 4: Using Standalone Simulation Script**
+
+You can also directly use the backend.simulation module to create simulation:
+
+`python
+from backend.simulation import Simulation
+
+# Create a simulation with 3x3 grid, 15 students, saved as 1st experiment
+sim = Simulation(row=3, column=3, num_students=15, simulation_number=1)
+sim.run(run_all=True)  # run_all=True automatically runs complete simulation
+`
+
+**Method 5: Launch Frontend Interface**
+
+The project also provides a modern frontend interface built with Flask, offering an intuitive user interface to control and monitor the simulation process:
+
+1. Ensure project dependencies are installed:
+   `ash
+   pip install -r requirements.txt
+   `
+
+2. Enter the frontend directory and start the application:
+   `ash
+   cd frontend
+   python app.py
+   `
+
+3. Access http://localhost:5000 to view the application
+
+The frontend interface includes the following features:
+- **Home page**: Provides four main function entries: start simulation, repeat simulation, draw/view plots, and simulation records
+- **Start simulation**: Allows users to set various parameters (grid size, number of students, major ratios, cleaning time, etc.) for simulation
+- **Repeat simulation**: Repeats simulation based on existing simulation records
+- **Draw/View plots**: Generates and views visualization charts of simulation results
+- **Simulation records**: View and manage all simulation records
+- **Multi-language support**: Supports both Chinese and English interface switching
+- **Multi-process acceleration**: Uses multiprocessing for parallel simulation
+### Project Features\n\n- **Time System**: Simulate a day (7:00-23:59), with 15-minute library time increments\n- **Student Behavior**: Intelligent decision-making based on timetables, schedules, and satisfaction\n- **Parameter Adjustment**: Users can adjust grid size, number of students, major ratios, seat preferences, check and cleanup times\n- **Data Visualization**: Automatically generate integrated charts showing key simulation indicators\n- **Auto Numbering System**: Automatically generate simulation numbers based on student count for easy data management\n- **Auto Analysis System**: Automatically analyze relevant indicators by seat count and generate analysis charts\n- **Data Integration Feature**: Integrate multiple experiments with the same parameters into one chart\n\n### API Configuration\n\nThe project uses DeepSeek's LLM API to simulate student behaviors. API configuration information is located in the `utils.py` file, including:\n- `BASE_URL`: API base URL\n- `API_KEY`: API key\n- `MODEL`: Model name used\n\n### Testing\n\nRun tests:\n```bash\npython -m pytest backend/test/\n# Or run specific tests\npython backend/test/test_seats.py\npython backend/test/test_students.py\npython backend/test/test_interactions.py\npython problem_check.py  # Root directory problem check script\npython test_plot.py      # Visualization function test\n
 ```
 
 ## 模拟分析说明

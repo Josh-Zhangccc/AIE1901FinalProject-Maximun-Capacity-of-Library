@@ -1,0 +1,276 @@
+/* General Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.container-fluid {
+    min-height: 100vh;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 48px 0 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+    background-color: #2c3e50;
+    color: white;
+}
+
+.sidebar-sticky {
+    position: relative;
+    top: 0;
+    height: calc(100vh - 48px);
+    padding-top: .5rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.sidebar .nav-link {
+    color: #bdc3c7;
+    padding: 0.75rem 1rem;
+    margin: 0.25rem 0;
+    border-radius: 0.375rem;
+}
+
+.sidebar .nav-link:hover {
+    color: #ecf0f1;
+    background-color: #34495e;
+}
+
+.sidebar .nav-link.active {
+    color: #3498db;
+    background-color: #34495e;
+    font-weight: 500;
+}
+
+.sidebar-title {
+    padding: 0 1rem 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #34495e;
+}
+
+.language-toggle {
+    padding: 0 1rem;
+}
+
+/* Main Content Styles */
+main {
+    margin-left: 16.666667%;
+    padding-top: 20px;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, .075);
+    border: 1px solid rgba(0, 0, 0, .125);
+    border-radius: 0.5rem;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid rgba(0, 0, 0, .125);
+    padding: 0.75rem 1.25rem;
+    font-weight: 500;
+}
+
+/* Seat Grid Styles */
+.seat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 8px;
+    padding: 15px;
+}
+
+.seat {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    position: relative;
+}
+
+.seat:hover {
+    transform: scale(1.05);
+}
+
+.seat.vacant {
+    background-color: #28a745; /* Green for vacant */
+}
+
+.seat.taken {
+    background-color: #007bff; /* Blue for taken */
+}
+
+.seat.reserved {
+    background-color: #ffc107; /* Yellow for reserved */
+    color: #212529;
+}
+
+.seat.signed {
+    background-color: #dc3545; /* Red for signed (needs cleaning) */
+}
+
+.seat-info {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    font-size: 8px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 2px;
+    padding: 1px 2px;
+}
+
+/* Progress Bar Styles */
+.progress {
+    height: 20px;
+    border-radius: 10px;
+}
+
+.progress-bar {
+    border-radius: 10px;
+    line-height: 20px;
+}
+
+/* Plot Gallery Styles */
+.plot-item {
+    margin-bottom: 1.5rem;
+    cursor: pointer;
+}
+
+.plot-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.plot-item img:hover {
+    transform: scale(1.03);
+}
+
+.plot-info {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* File Tree Styles */
+.file-tree {
+    font-family: 'Courier New', monospace;
+    line-height: 1.6;
+}
+
+.file-node {
+    margin-left: 20px;
+}
+
+.file-icon {
+    margin-right: 5px;
+    width: 16px;
+    display: inline-block;
+}
+
+.folder-icon {
+    color: #f39c12;
+}
+
+.file-icon {
+    color: #3498db;
+}
+
+/* Button Styles */
+.btn-primary {
+    background-color: #3498db;
+    border-color: #3498db;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+}
+
+.btn-success {
+    background-color: #2ecc71;
+    border-color: #2ecc71;
+}
+
+.btn-success:hover {
+    background-color: #27ae60;
+    border-color: #27ae60;
+}
+
+.btn-info {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+    border-color: #138496;
+}
+
+.btn-warning {
+    background-color: #f39c12;
+    border-color: #f39c12;
+    color: white;
+}
+
+.btn-warning:hover {
+    background-color: #e67e22;
+    border-color: #e67e22;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    border-color: #e74c3c;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+    border-color: #c0392b;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        position: relative;
+        padding-top: 0;
+        height: auto;
+        min-height: 80px;
+    }
+    
+    main {
+        margin-left: 0;
+    }
+    
+    .sidebar-sticky {
+        height: auto;
+        overflow-y: visible;
+    }
+    
+    .nav.flex-column {
+        flex-direction: row !important;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding: 10px 0;
+    }
+    
+    .nav-item {
+        display: inline-block;
+        margin-right: 0.5rem;
+    }
+}

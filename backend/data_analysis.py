@@ -5,12 +5,18 @@ data_analysis.py
 import json
 import os
 import re
+import matplotlib
+matplotlib.use('Agg')  # Use non-GUI backend
 from typing import Dict, List, Tuple
 from config import simulations_base_path
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from datetime import datetime
 import pandas as pd
+
+# Configure font settings for proper character display on Windows
+plt.rcParams['font.sans-serif'] = ['Arial', 'DejaVu Sans', 'Liberation Sans']  # Use fonts that support English characters properly
+plt.rcParams['axes.unicode_minus'] = False  # Used to properly display minus signs
 
 def analyze_seat_occupancy_rate(data: List[Dict]) -> float:
     """
@@ -246,14 +252,14 @@ def analyze_simulations_by_seat_count(seat_count: int) -> Dict:
     simulations_folder = os.path.join(simulations_base_path, seat_folder_name)
     
     if not os.path.exists(simulations_folder):
-        print(f"警告: 找不到座位数为 {seat_count} 的模拟数据文件夹: {simulations_folder}")
+        print(f"Warning: Cannot find simulation data folder for {seat_count} seats: {simulations_folder}")
         return {}
     
     # 获取该文件夹中的所有JSON文件
     json_files = [f for f in os.listdir(simulations_folder) if f.endswith('.json')]
     
     if not json_files:
-        print(f"警告: 座位数为 {seat_count} 的文件夹中没有JSON文件")
+        print(f"Warning: No JSON files found in folder for {seat_count} seats")
         return {}
     
     analysis_results = {
@@ -313,7 +319,7 @@ def analyze_simulations_by_seat_count(seat_count: int) -> Dict:
             analysis_results['utilization_efficiencies'].append(0.0)  # 为了保持兼容性，设置为0
             
         except Exception as e:
-            print(f"处理文件 {file_name} 时出错: {e}")
+            print(f"Error processing file {file_name}: {e}")
             continue
     
     # 按学生数量排序
@@ -333,107 +339,106 @@ def plot_analysis(seat_count: int, analysis_results: Dict, save_path: str = None
     3. 最大清理数和峰值最大占座率
     """
     if not analysis_results or not analysis_results['student_counts']:
-        print(f"没有数据可以绘制分析图表 (座位数: {seat_count})")
+        print(f"No data available to plot analysis chart (Seat count: {seat_count})")
         return
     
-    # 设置中文字体支持
-    plt.rcParams['font.sans-serif'] = ['SimHei', 'DejaVu Sans']  # 用来正常显示中文标签
-    plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+    # Set English label support
+    plt.rcParams['axes.unicode_minus'] = False  # Used to properly display minus signs
     
-    # 提取数据
+    # Extract data
     student_counts = analysis_results['student_counts']
-    occupancy_rates = analysis_results['occupancy_rates']  # 高座位占用时间比例
+    occupancy_rates = analysis_results['occupancy_rates']  # High seat occupancy time ratio
     final_unsatisfied = analysis_results['final_unsatisfied']
     final_cleared = analysis_results['final_cleared']
-    reversed_rates = analysis_results.get('reversed_rates', [0]*len(student_counts))  # 高占座率时间比例
+    reversed_rates = analysis_results.get('reversed_rates', [0]*len(student_counts))  # High reservation rate time ratio
     dynamic_capacity_ratios = analysis_results.get('dynamic_capacity_ratios', [0]*len(student_counts))
     peak_pressure_scores = analysis_results.get('peak_pressure_scores', [0]*len(student_counts))
     
-    # 计算学生总数超过图书馆静态容量比（以座位数为基准）
+    # Calculate the ratio of total student count exceeding library static capacity (based on seat count)
     over_capacity_ratios = [max(0, (students - seat_count) / seat_count) for students in student_counts]
     
-    # 创建图表 - 3行1列
+    # Create chart - 3 rows, 1 column
     fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(14, 18))
     
-    # 设置总标题
+    # Set main title
     min_students = min(student_counts) if student_counts else 0
     max_students = max(student_counts) if student_counts else 0
-    fig.suptitle(f'座位数 {seat_count} 模拟数据分析\n学生数范围: {min_students} - {max_students}', 
+    fig.suptitle(f'Analysis of Simulations with {seat_count} Seats\nStudent Count Range: {min_students} - {max_students}', 
                 fontsize=16, y=0.98)
     
-    # 第一个子图：综合占用指标（高占用时间比例 + 峰值压力分数）
-    ax1_twin = ax1.twinx()  # 创建第二个y轴
+    # First subplot: Comprehensive occupancy index (high occupancy ratio + peak pressure score)
+    ax1_twin = ax1.twinx()  # Create second y-axis
     
-    # 绘制高座位占用时间比例 - 以超容量比为x轴
+    # Plot high seat occupancy time ratio - with over-capacity ratio as x-axis
     line1 = ax1.plot(over_capacity_ratios, occupancy_rates, marker='o', color='#4A90A4', 
-                     linewidth=2, markersize=8, label='高座位占用时间比例（>80%）')
-    # 绘制峰值压力分数 - 以超容量比为x轴
+                     linewidth=2, markersize=8, label='High Seat Occupancy Time Ratio (>80%)')
+    # Plot peak pressure score - with over-capacity ratio as x-axis
     line2 = ax1_twin.plot(over_capacity_ratios, peak_pressure_scores, marker='s', color='#F5A623', 
-                          linewidth=2, markersize=8, label='峰值压力分数')
+                          linewidth=2, markersize=8, label='Peak Pressure Score')
     
-    ax1.set_title('高座位占用时间比例和峰值压力分数 vs 超容量比', fontsize=14)
-    ax1.set_xlabel('学生总数超过图书馆静态容量比 (超容量比)')
-    ax1.set_ylabel('高座位占用时间比例', color='#4A90A4')
-    ax1_twin.set_ylabel('峰值压力分数', color='#F5A623')
+    ax1.set_title('High Seat Occupancy Time Ratio and Peak Pressure Score vs Over-Capacity Ratio', fontsize=14)
+    ax1.set_xlabel('Ratio of Total Students Exceeding Library Static Capacity (Over-Capacity Ratio)')
+    ax1.set_ylabel('High Seat Occupancy Time Ratio', color='#4A90A4')
+    ax1_twin.set_ylabel('Peak Pressure Score', color='#F5A623')
     
-    # 合并图例
+    # Merge legends
     lines1, labels1 = ax1.get_legend_handles_labels()
     lines2, labels2 = ax1_twin.get_legend_handles_labels()
-    ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left')
+    ax1.legend(lines1 + lines2, labels1 + lines2, loc='upper left')
     
     ax1.grid(True, linestyle='--', alpha=0.6)
     ax1.set_ylim(0, 1)
     ax1_twin.set_ylim(0, max(peak_pressure_scores) if peak_pressure_scores else 1)
     
-    # 第二个子图：最大不满数和动态容量比
-    ax2_twin = ax2.twinx()  # 创建第二个y轴
+    # Second subplot: Maximum unsatisfied count and dynamic capacity ratio
+    ax2_twin = ax2.twinx()  # Create second y-axis
     
     line3 = ax2.plot(over_capacity_ratios, final_unsatisfied, marker='^', color='#D0021B', 
-                     linewidth=2, markersize=8, label='最大不满数')
+                     linewidth=2, markersize=8, label='Max Unsatisfied Count')
     line4 = ax2_twin.plot(over_capacity_ratios, dynamic_capacity_ratios, marker='o', color='#50E3C2', 
-                          linewidth=2, markersize=8, label='动态容量比')
+                          linewidth=2, markersize=8, label='Dynamic Capacity Ratio')
     
-    ax2.set_title('最大不满数和动态容量比 vs 超容量比', fontsize=14)
-    ax2.set_xlabel('学生总数超过图书馆静态容量比 (超容量比)')
-    ax2.set_ylabel('最大不满数', color='#D0021B')
-    ax2_twin.set_ylabel('动态容量比', color='#50E3C2')
+    ax2.set_title('Max Unsatisfied Count and Dynamic Capacity Ratio vs Over-Capacity Ratio', fontsize=14)
+    ax2.set_xlabel('Ratio of Total Students Exceeding Library Static Capacity (Over-Capacity Ratio)')
+    ax2.set_ylabel('Max Unsatisfied Count', color='#D0021B')
+    ax2_twin.set_ylabel('Dynamic Capacity Ratio', color='#50E3C2')
     
-    # 合并图例
+    # Merge legends
     lines3, labels3 = ax2.get_legend_handles_labels()
     lines4, labels4 = ax2_twin.get_legend_handles_labels()
-    ax2.legend(lines3 + lines4, labels3 + labels4, loc='upper left')
+    ax2.legend(lines3 + lines4, labels3 + lines4, loc='upper left')
     
     ax2.grid(True, linestyle='--', alpha=0.6)
     ax2_twin.set_ylim(0, 1)
     
-    # 第三个子图：最大清理数和峰值最大占座率
-    ax3_twin = ax3.twinx()  # 创建第二个y轴
+    # Third subplot: Maximum cleared count and peak maximum reservation rate
+    ax3_twin = ax3.twinx()  # Create second y-axis
     
     line5 = ax3.plot(over_capacity_ratios, final_cleared, marker='d', color='#90144B', 
-                     linewidth=2, markersize=8, label='最大清理数')
+                     linewidth=2, markersize=8, label='Max Cleared Count')
     line6 = ax3_twin.plot(over_capacity_ratios, reversed_rates, marker='s', color='#F5A623', 
-                          linewidth=2, markersize=8, label='峰值最大占座率')
+                          linewidth=2, markersize=8, label='Peak Maximum Reservation Rate')
     
-    ax3.set_title('最大清理数和峰值最大占座率 vs 超容量比', fontsize=14)
-    ax3.set_xlabel('学生总数超过图书馆静态容量比 (超容量比)')
-    ax3.set_ylabel('最大清理数', color='#90144B')
-    ax3_twin.set_ylabel('峰值最大占座率', color='#F5A623')
+    ax3.set_title('Max Cleared Count and Peak Maximum Reservation Rate vs Over-Capacity Ratio', fontsize=14)
+    ax3.set_xlabel('Ratio of Total Students Exceeding Library Static Capacity (Over-Capacity Ratio)')
+    ax3.set_ylabel('Max Cleared Count', color='#90144B')
+    ax3_twin.set_ylabel('Peak Maximum Reservation Rate', color='#F5A623')
     
-    # 合并图例
+    # Merge legends
     lines5, labels5 = ax3.get_legend_handles_labels()
     lines6, labels6 = ax3_twin.get_legend_handles_labels()
     ax3.legend(lines5 + lines6, labels5 + labels6, loc='upper left')
     
     ax3.grid(True, linestyle='--', alpha=0.6)
     
-    # 调整子图间距，避免重叠
+    # Adjust subplot spacing to avoid overlap
     plt.tight_layout(pad=3.0)
     
-    # 保存或显示图表
+    # Save or display chart
     if save_path:
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
         plt.close()
-        print(f"分析图表已保存到: {save_path}")
+        print(f"Analysis chart saved to: {save_path}")
     else:
         plt.show()
 
@@ -510,16 +515,16 @@ def run_analysis(seat_count: int, min_students: int = None, max_students: int = 
     :param max_students: 最大学生数
     :param output_dir: 输出目录
     """
-    print(f"开始分析座位数为 {seat_count} 的模拟数据...")
+    print(f"Starting analysis of simulation data for {seat_count} seats...")
     
     # 执行分析
     results = analyze_simulations_by_seat_count(seat_count)
     
     if not results or not results['student_counts']:
-        print(f"没有找到座位数为 {seat_count} 的有效模拟数据")
-        return
+        print(f"No valid simulation data found for {seat_count} seats")
+        return None
     
-    print(f"找到 {len(results['student_counts'])} 个模拟数据文件进行分析")
+    print(f"Found {len(results['student_counts'])} simulation data files for analysis")
     
     # 根据指定范围过滤数据
     if min_students is not None or max_students is not None:
@@ -542,11 +547,11 @@ def run_analysis(seat_count: int, min_students: int = None, max_students: int = 
                     filtered_results[key].append(results[key][i])
         
         results = filtered_results
-        print(f"根据范围 {min_students}-{max_students} 过滤后剩余 {len(results['student_counts'])} 个数据点")
+        print(f"After filtering by range {min_students}-{max_students}, {len(results['student_counts'])} data points remain")
     
     if not results['student_counts']:
-        print(f"指定范围 {min_students}-{max_students} 内没有有效的模拟数据")
-        return
+        print(f"No valid simulation data in specified range {min_students}-{max_students}")
+        return None
     
     # 对相同学生数的模拟进行平均处理
     results = average_similar_simulations(results)
@@ -558,29 +563,33 @@ def run_analysis(seat_count: int, min_students: int = None, max_students: int = 
     os.makedirs(output_dir, exist_ok=True)
     
     # 生成文件名 (按照要求的格式: analysis(seats-min-max))
-    min_result = min(results['student_counts']) if results['student_counts'] else 0
-    max_result = max(results['student_counts']) if results['student_counts'] else 0
-    file_name = f"analysis({seat_count}-{min_result}-{max_result}).png"
-    save_path = os.path.join(output_dir, f"seats_{seat_count}", file_name)
-    
-    # 创建座位数子目录
-    seat_dir = os.path.join(output_dir, f"seats_{seat_count}")
-    os.makedirs(seat_dir, exist_ok=True)
-    
-    # 绘制并保存图表
-    plot_analysis(seat_count, results, save_path)
+    if results['student_counts']:  # 确保列表非空
+        min_result = min(results['student_counts']) if results['student_counts'] else 0
+        max_result = max(results['student_counts']) if results['student_counts'] else 0
+        file_name = f"analysis({seat_count}-{min_result}-{max_result}).png"
+        save_path = os.path.join(output_dir, f"seats_{seat_count}", file_name)
+        
+        # 创建座位数子目录
+        seat_dir = os.path.join(output_dir, f"seats_{seat_count}")
+        os.makedirs(seat_dir, exist_ok=True)
+        
+        # 绘制并保存图表
+        plot_analysis(seat_count, results, save_path)
+    else:
+        print("No valid data to generate analysis chart")
+        return None
     
     # 打印统计摘要
-    print("\n分析结果摘要:")
-    print(f"座位数: {seat_count}")
-    print(f"学生数范围: {min_result} - {max_result}")
-    print(f"处理后的模拟文件数: {len(results['student_counts'])}")
-    print(f"平均综合占用指标: {sum(results['occupancy_rates'])/len(results['occupancy_rates']):.3f}")
-    print(f"平均高占座率时间比例: {sum(results['reversed_rates'])/len(results['reversed_rates']):.3f}")
-    print(f"平均最终不满意数: {sum(results['final_unsatisfied'])/len(results['final_unsatisfied']):.1f}")
-    print(f"平均最终被清理数: {sum(results['final_cleared'])/len(results['final_cleared']):.1f}")
-    print(f"平均动态容量比: {sum(results['dynamic_capacity_ratios'])/len(results['dynamic_capacity_ratios']):.3f}")
-    print(f"平均峰值压力分数: {sum(results['peak_pressure_scores'])/len(results['peak_pressure_scores']):.3f}")
-    print(f"平均利用率效率: {sum(results['utilization_efficiencies'])/len(results['utilization_efficiencies']):.3f}")
+    print("\nAnalysis Result Summary:")
+    print(f"Seat Count: {seat_count}")
+    print(f"Student Count Range: {min_result} - {max_result}")
+    print(f"Number of processed simulation files: {len(results['student_counts'])}")
+    print(f"Average Comprehensive Occupancy Index: {sum(results['occupancy_rates'])/len(results['occupancy_rates']):.3f}" if results['occupancy_rates'] else "Average Comprehensive Occupancy Index: 0")
+    print(f"Average High Reservation Rate Time Ratio: {sum(results['reversed_rates'])/len(results['reversed_rates']):.3f}" if results['reversed_rates'] else "Average High Reservation Rate Time Ratio: 0")
+    print(f"Average Final Unsatisfied Count: {sum(results['final_unsatisfied'])/len(results['final_unsatisfied']):.1f}" if results['final_unsatisfied'] else "Average Final Unsatisfied Count: 0")
+    print(f"Average Final Cleared Count: {sum(results['final_cleared'])/len(results['final_cleared']):.1f}" if results['final_cleared'] else "Average Final Cleared Count: 0")
+    print(f"Average Dynamic Capacity Ratio: {sum(results['dynamic_capacity_ratios'])/len(results['dynamic_capacity_ratios']):.3f}" if results['dynamic_capacity_ratios'] else "Average Dynamic Capacity Ratio: 0")
+    print(f"Average Peak Pressure Score: {sum(results['peak_pressure_scores'])/len(results['peak_pressure_scores']):.3f}" if results['peak_pressure_scores'] else "Average Peak Pressure Score: 0")
+    print(f"Average Utilization Efficiency: {sum(results['utilization_efficiencies'])/len(results['utilization_efficiencies']):.3f}" if results['utilization_efficiencies'] else "Average Utilization Efficiency: 0")
     
     return results
