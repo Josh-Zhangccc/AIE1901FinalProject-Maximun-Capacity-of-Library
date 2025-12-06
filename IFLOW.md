@@ -70,21 +70,11 @@ AIE1901_FinalExamSimulation/
 ├── rename_json_files.py   # JSON文件重命名脚本
 ├── requirements.txt       # 项目依赖包列表
 ├── seat_simulation_env.yml # Conda环境配置文件
-├── test_9_11_short.py     # 测试脚本
-├── test_9_11_simulation.py # 测试脚本
-├── test_9_11.py          # 测试脚本
-├── test_agents_retry.py   # 测试脚本
 ├── test_analysis.py       # 测试脚本
 ├── test_auto_simulation_number.py # 测试脚本
-├── test_library_new_attributes.py # 测试脚本（新增）
-├── test_library_without_api.py # 测试脚本（新增）
-├── test_new_attributes.py # 测试脚本（新增）
-├── test_new_save_figure.py # 测试脚本（新增）
-├── test_new_simulation.py # 测试脚本（新增）
-├── test_plot_analysis.py  # 测试脚本（新增）
-├── test_reverse_seat_logic.py # 测试脚本（新增）
-├── test_save_figure.py    # 测试脚本
-├── utils.py               # 工具函数，包含API配置
+├── fix_format.py          # 格式修复脚本
+├── fix_function_def.py    # 函数定义修复脚本
+├── simple_fix2.py         # 简单修复脚本
 └── 要求.txt              # 项目需求文档
 ```
 
@@ -200,10 +190,12 @@ conda env create -f seat_simulation_env.yml
 
 ## API配置
 
-在`utils.py`中配置DeepSeek API：
-- `BASE_URL`: https://api.deepseek.com
-- `API_KEY`: sk-cf8230f3e78a4cedadf7f7ab158f5441
-- `MODEL`: deepseek-chat
+项目使用DeepSeek的LLM API来模拟学生行为，API配置信息（BASE_URL, API_KEY, MODEL）应存放在`utils.py`文件中（该文件目前缺少，需要创建），包括：
+- `BASE_URL`: API基础URL 
+- `API_KEY`: API密钥
+- `MODEL`: 使用的模型名称
+
+**注意**: 项目代码中引用了`utils.py`文件来获取API配置，但该文件似乎缺失。需要在项目根目录创建`utils.py`文件并添加必要的API配置。
 
 ## 运行方式
 
@@ -288,17 +280,10 @@ sim.run(run_all=True)  # run_all=True 会自动运行完整模拟
   - 测试图书馆座位计数功能
 - `problem_check.py`: 项目问题检查脚本，包含多项测试
 - `test_plot.py`: 可视化功能测试脚本
-- **新增测试**:
-  - `test_library_new_attributes.py`: 测试图书馆新属性
-  - `test_library_without_api.py`: 测试无API调用的图书馆功能
-  - `test_new_attributes.py`: 测试新学生属性
-  - `test_new_save_figure.py`: 测试新图像保存功能
-  - `test_new_simulation.py`: 测试新模拟功能
-  - `test_plot_analysis.py`: 测试绘图分析功能
-  - `test_reverse_seat_logic.py`: 测试占座逻辑
-  - `test_agents_retry.py`: 测试代理重试机制
-  - `test_analysis.py`: 测试分析功能
-  - `test_auto_simulation_number.py`: 测试自动模拟编号功能
+
+此外，项目根目录还包含以下测试脚本：
+- `test_analysis.py`: 测试分析功能
+- `test_auto_simulation_number.py`: 测试自动模拟编号功能
 
 运行测试：
 ```bash
@@ -322,6 +307,7 @@ python test_plot.py      # 可视化功能测试
 - **数据整合功能**: 将相同参数的多次实验整合到一张图像中
 - **多进程支持**: 支持并行模拟以提高性能
 - **前端界面**: 提供直观的Web界面进行模拟控制和数据查看
+- **修复工具**: 包含多个修复脚本，用于修复格式和函数定义问题
 
 ## 提示词系统 (prompt.py)
 
@@ -351,6 +337,8 @@ python test_plot.py      # 可视化功能测试
 **待完善部分：**
 - 完整的模拟流程优化
 - 性能优化（如解决Library初始化时可能导致的长时间延迟问题）
+- **重要**: 创建缺失的`utils.py`配置文件以支持API调用
+- 修复前端app.py中的函数格式问题（已有修复脚本可用）
 
 ## 模拟分析说明
 
